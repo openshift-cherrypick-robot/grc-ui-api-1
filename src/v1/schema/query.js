@@ -10,7 +10,7 @@
 // eslint-disable-next-line
 export const typeDef = `
 type Query {
-  applications(name: String, namespace: String): [Application]
+  #applications(name: String, namespace: String): [Application]
   namespaces: [Namespace]
   logs(containerName: String!, podName: String!, podNamespace: String!, clusterName: String!): String
 
@@ -28,7 +28,7 @@ type Mutation {
   # Creates an Application.
   # Requires a resource of kind "Application".
   # Other supported kinds are: ConfigMap, Deployable, DeployableOverride, and PlacementPolicy
-  createApplication(resources: [JSON]): JSON
+  #createApplication(resources: [JSON]): JSON
 
   # Creates a Kubernetes Policy
   createPolicy(resources: [JSON]): JSON
@@ -59,7 +59,7 @@ type Mutation {
 
   # NOTE: This deletes the top level Application object and any child resources the user has selected.
   # Child resources include Deployables, PlacementPolicies, ConfigMaps, ApplicationRelationships and DeployableOverrides.
-  deleteApplication(path: String!, resources: JSON): String
+  #deleteApplication(path: String!, resources: JSON): String
 }
 
 # Common fields for all Kubernetes objects

@@ -11,29 +11,12 @@
 export default function createMockHttp() {
   const state = {
     apps: require('./AppList'),
-    clustersByNamespace: {
-      default: require('./ClusterByNS').default,
-      kubeSystem: require('./ClusterByNS').kubeSystem,
-    },
-    clusterstatusesByNamespace: {
-      default: require('./ClusterStatusListByNS.js').default,
-      kubeSystem: require('./ClusterStatusListByNS.js').kubeSystem,
-    },
-    clusters: require('./ClusterList').default,
     userQuery: require('./UserQuery').default,
     apiList: {
       mockResponse: require('./APIList').mockResponse,
       apiPath: require('./APIList').apiPath,
     },
-    clusterStatus: require('./ClusterStatusList').default,
-    repos: require('./ReposList').default,
-    repoMutations: require('./RepoMutationsList').default,
-    relMutations: require('./RelMutationList').default,
-    pods: require('./PodList'),
-    pvs: require('./PVsList'),
-    nodes: require('./NodeList'),
     namespace: require('./NamespaceList'),
-    release: require('./RelsList'),
     policies: require('./PolicyList'),
     compliances: require('./ComplianceList'),
     resourceViews: require('./ResourceView'),

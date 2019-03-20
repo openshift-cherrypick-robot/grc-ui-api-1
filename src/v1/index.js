@@ -21,7 +21,7 @@ import logger from './lib/logger';
 
 import KubeConnector from './connectors/kube';
 
-import ApplicationModel from './models/application';
+import PlacementModel from './models/placement';
 import GenericModel from './models/generic';
 import QueryModel from './models/userquery';
 import ComplianceModel from './models/compliance';
@@ -96,7 +96,7 @@ graphQLServer.use(GRAPHQL_PATH, bodyParser.json(), graphqlExpress(async (req) =>
 
   const context = {
     req,
-    applicationModel: new ApplicationModel({ kubeConnector }),
+    PlacementModel: new PlacementModel({ kubeConnector }),
     genericModel: new GenericModel({ kubeConnector }),
     queryModel: new QueryModel({ kubeConnector, req }),
     complianceModel: new ComplianceModel({ kubeConnector }),

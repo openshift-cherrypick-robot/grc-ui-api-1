@@ -10,7 +10,7 @@
 import _ from 'lodash';
 import { makeExecutableSchema } from 'graphql-tools';
 
-import * as applications from './application';
+import * as placements from './placement';
 import * as compliance from './compliance';
 import * as json from './json';
 import * as namespace from './namespace';
@@ -20,7 +20,7 @@ import * as query from './query';
 import * as userQuery from './user-query';
 
 const modules = [
-  applications,
+  placements,
   compliance,
   json,
   namespace,

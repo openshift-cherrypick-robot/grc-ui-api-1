@@ -21,6 +21,9 @@ type Compliance implements K8sObject {
   apiVersion: String
   placementPolicies: [PlacementPolicy]
   placementBindings: [PlacementBinding]
+  name: String
+  annotation: JSON
+  compliantType: String
 }
 
 type CompliantStatus {

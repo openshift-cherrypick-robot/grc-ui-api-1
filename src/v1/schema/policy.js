@@ -18,9 +18,10 @@ type Policy implements K8sObject {
   rules: [PolicyRules]
   # Possible values are: compliant, notcompliant, invalid
   status: String
-  roleTemplates: [PolicyTemplates]
-  roleBindingTemplates: [PolicyTemplates]
-  objectTemplates: [PolicyTemplates]
+  roleTemplates: [PolicyTemplate]
+  roleBindingTemplates: [PolicyTemplate]
+  objectTemplates: [PolicyTemplate]
+  policyTemplates: [PolicyTemplate]
   violations: [Violations]
   raw: JSON
   message: String
@@ -32,7 +33,7 @@ type PolicyDetail {
   include_namespace: [String]
 }
 
-type PolicyTemplates {
+type PolicyTemplate {
   apiVersion: String
   complianceType: String
   compliant: String
@@ -74,6 +75,7 @@ export const resolver = {
     roleTemplates: parent => ComplianceModel.resolvePolicyTemplates(parent, 'role-templates'),
     roleBindingTemplates: parent => ComplianceModel.resolvePolicyTemplates(parent, 'roleBinding-templates'),
     objectTemplates: parent => ComplianceModel.resolvePolicyTemplates(parent, 'object-templates'),
+    policyTemplates: parent => ComplianceModel.resolvePolicyTemplates(parent, 'policy-templates'),
     rules: parent => ComplianceModel.resolvePolicyRules(parent),
     status: parent => ComplianceModel.resolvePolicyStatus(parent),
     violations: parent => ComplianceModel.resolvePolicyViolations(parent),

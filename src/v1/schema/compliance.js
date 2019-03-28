@@ -18,12 +18,10 @@ type Compliance implements K8sObject {
   metadata: Metadata
   policyCompliant: String
   raw: JSON
-  apiVersion: String
   placementPolicies: [PlacementPolicy]
   placementBindings: [PlacementBinding]
   name: String
-  annotation: JSON
-  compliantType: String
+  remediation: String
 }
 
 type CompliantStatus {
@@ -53,9 +51,10 @@ type CompliancePolicyDetail {
   status: String
   enforcement: String
   rules: [PolicyRules]
-  roleTemplates: [PolicyTemplates]
-  roleBindingTemplates: [PolicyTemplates]
-  objectTemplates: [PolicyTemplates]
+  roleTemplates: [PolicyTemplate]
+  roleBindingTemplates: [PolicyTemplate]
+  objectTemplates: [PolicyTemplate]
+  policyTemplates: [PolicyTemplate]
 }
 
 type CompliancePolicy implements K8sObject {
@@ -70,12 +69,13 @@ type CompliancePolicy implements K8sObject {
   name: String @deprecated(reason: "Use metadata.name field.")
   rules: [PolicyRules]
   status: String
-  templates: [PolicyTemplates]
+  templates: [PolicyTemplate]
   valid: String
   violations: [Violations]
-  roleTemplates: [PolicyTemplates]
-  roleBindingTemplates: [PolicyTemplates]
-  objectTemplates: [PolicyTemplates]
+  roleTemplates: [PolicyTemplate]
+  roleBindingTemplates: [PolicyTemplate]
+  objectTemplates: [PolicyTemplate]
+  policyTemplates: [PolicyTemplate]
   raw: JSON
   message: String
 }

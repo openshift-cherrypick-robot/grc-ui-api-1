@@ -161,10 +161,7 @@ export default class ComplianceModel {
       ...entry,
       raw: entry,
       name: _.get(entry, 'metadata.name', ''),
-      compliantType: _.get(entry, 'spec.remediationAction', ''),
-      selfLink: _.get(entry, 'metadata.selfLink', ''),
-      apiVersion: _.get(entry, 'apiVersion', ''),
-      annotation: _.get(entry, 'metadata.annotations', ''),
+      remediation: _.get(entry, 'spec.remediationAction', ''),
     }));
   }
 
@@ -185,7 +182,7 @@ export default class ComplianceModel {
 
   static resolveCompliancePoliciesFromSpec(parent, aggregatedStatus) {
     const compliancePolicies = [];
-    const policies = _.get(parent, 'spec.runtime-rules', []);
+    const policies = _.get(parent, 'spec.runtime-rules') ? _.get(parent, 'spec.runtime-rules') : [parent];
     policies.forEach((policy) => {
       compliancePolicies.push({
         name: _.get(policy, 'metadata.name'),
@@ -195,6 +192,7 @@ export default class ComplianceModel {
         roleTemplates: this.resolvePolicyTemplates(policy, 'role-templates'),
         roleBindingTemplates: this.resolvePolicyTemplates(policy, 'roleBinding-templates'),
         objectTemplates: this.resolvePolicyTemplates(policy, 'object-templates'),
+        policyTemplates: this.resolvePolicyTemplates(policy, 'policy-templates'),
         detail: this.resolvePolicyDetails(policy),
         raw: policy,
       });
@@ -518,7 +516,7 @@ export default class ComplianceModel {
             validity: _.get(res, 'status.Validity.valid') || _.get(res, 'status.Validity', ''),
             raw: res,
           });
-        } else if (type === 'object-templates') {
+        } else if (type === 'object-templates' || type === 'policy-templates') {
           tempArray.push({
             name: _.get(res, 'objectDefinition.metadata.name', '-'),
             lastTransition: _.get(res, 'status.conditions[0].lastTransitionTime', ''),
@@ -560,7 +558,7 @@ export default class ComplianceModel {
           reason: (templateCondition && _.get(templateCondition, 'reason', '-')) || '-',
           selector: _.get(res, 'selector', ''),
         });
-      } else if (_.get(res, 'templateType') === 'object-templates') {
+      } else if (_.get(res, 'templateType') === 'object-templates' || _.get(res, 'templateType') === 'policy-templates') {
         violationArray.push({
           name: _.get(res, 'objectDefinition.metadata.name', '-'),
           cluster: _.get(cluster, 'clustername', '-'),

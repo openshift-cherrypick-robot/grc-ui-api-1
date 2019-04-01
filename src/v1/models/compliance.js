@@ -161,6 +161,7 @@ export default class ComplianceModel {
       ...entry,
       raw: entry,
       name: _.get(entry, 'metadata.name', ''),
+      namespace: _.get(entry, 'metadata.namespace', ''),
       remediation: _.get(entry, 'spec.remediationAction', ''),
     }));
   }

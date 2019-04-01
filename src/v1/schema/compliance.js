@@ -21,6 +21,7 @@ type Compliance implements K8sObject {
   placementPolicies: [PlacementPolicy]
   placementBindings: [PlacementBinding]
   name: String
+  namespace: String
   remediation: String
 }
 

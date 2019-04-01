@@ -88,13 +88,13 @@ export default class ComplianceModel {
 
 
   async deleteCompliance(input) {
-    const response = await this.kubeConnector.delete(`/apis/compliance.mcm.ibm.com/v1alpha1/namespaces/${input.namespace}/compliances/${input.name}`);
+    const response = await this.kubeConnector.delete(input.selfLink);
     if (response.code || response.message) {
-      throw new Error(`MCM ERROR ${response.code} - ${response.message}`);
+      throw new Error(`GRC ERROR ${response.code} - ${response.message}`);
     }
     const errors = await this.deleteComplianceResource(input.resources);
     if (errors && errors.length > 0) {
-      throw new Error(`MCM ERROR: Unable to delete application resource(s) - ${JSON.stringify(errors)}`);
+      throw new Error(`GRC ERROR: Unable to delete application resource(s) - ${JSON.stringify(errors)}`);
     }
     return response.metadata.name;
   }

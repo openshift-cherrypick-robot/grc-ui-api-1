@@ -419,7 +419,7 @@ export default class ComplianceModel {
   async getPolicies(name, clusterName) {
     // if policy name specified
     if (name !== undefined) {
-      const response = await this.kubeConnector.resourceViewQuery('policy', clusterName, name, false);
+      const response = await this.kubeConnector.resourceViewQuery('policies', clusterName, name, false, 'policy.mcm.ibm.com');
       const results = _.get(response, 'status.results');
       if (results) {
         const item = _.get(results, `${clusterName}`, {});

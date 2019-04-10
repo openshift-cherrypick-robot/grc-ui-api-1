@@ -349,7 +349,7 @@ export default class ComplianceModel {
       });
     });
 
-    return `${compliantPolicies}/${totalPolicies}`;
+    return `${totalPolicies - compliantPolicies}/${totalPolicies}`;
   }
 
 
@@ -357,7 +357,7 @@ export default class ComplianceModel {
     if (status && status.status) {
       const totalClusters = Object.keys(status.status).length;
       const compliantClusters = Object.values(status.status || []).filter(cluster => (_.get(cluster, 'compliant', '').toLowerCase() === 'compliant'));
-      return `${compliantClusters.length}/${totalClusters}`;
+      return `${totalClusters - compliantClusters.length}/${totalClusters}`;
     }
     return '0/0';
   }

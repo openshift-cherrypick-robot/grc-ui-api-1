@@ -26,7 +26,6 @@ before_install:
   - make init
   - make cicd-log-init
   - source travis-env.sh
-  - make docker-login
   - chmod +x copyright-check.sh
 
 install:
@@ -37,9 +36,11 @@ before_script:
 
 script:
   - make copyright-check
+  - make docker-login-edge
   - make image
 
 after_success:
+  - make docker-login
   - make push
   - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make release || echo "success"
   - |

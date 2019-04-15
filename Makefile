@@ -15,6 +15,13 @@ SHELL := /bin/bash
 GITHUB_USER := $(shell echo $(GITHUB_USER) | sed 's/@/%40/g')
 GITHUB_TOKEN ?=
 
+.PHONY: docker-login-edge
+docker-login-edge:
+ifndef $(and DOCKER_USERNAME, DOCKER_PASSWORD)
+	$(error DOCKER_USERNAME and DOCKER_PASSWORD must be defined, required for goal (docker-login))
+endif
+	@docker login -u $(DOCKER_USERNAME) -p $(DOCKER_PASSWORD) hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com
+
 .PHONY: default
 default:: init;
 

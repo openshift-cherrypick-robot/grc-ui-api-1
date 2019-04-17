@@ -55,8 +55,6 @@ prune:
 my-version:
 	$(eval IMAGE_VERSION := $(shell git rev-parse --short HEAD))
 
-app-version: my-version
-
 -include $(shell curl -so .build-harness -H "Authorization: token $(GITHUB_TOKEN)" -H "Accept: application/vnd.github.v3.raw" "https://raw.github.ibm.com/ICP-DevOps/build-harness/master/templates/Makefile.build-harness"; echo .build-harness)
 
 .PHONY: build

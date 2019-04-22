@@ -27,7 +27,6 @@ import QueryModel from './models/userquery';
 import ComplianceModel from './models/compliance';
 import ResourceViewModel from './models/resourceview';
 
-import createMockKubeHTTP from './mocks/kube-http';
 import schema from './schema/';
 import config from '../../config';
 import authMiddleware from './lib/auth-middleware';
@@ -81,18 +80,14 @@ if (isTest) {
 
 graphQLServer.use(...auth);
 graphQLServer.use(GRAPHQL_PATH, bodyParser.json(), graphqlExpress(async (req) => {
-  let kubeHTTP;
-  if (isTest) {
-    kubeHTTP = createMockKubeHTTP();
-  }
-
   const namespaces = req.user.namespaces.map(ns => ns.namespaceId);
-
   const kubeConnector = new KubeConnector({
     token: req.kubeToken,
-    httpLib: kubeHTTP,
     namespaces,
   });
+  if (isTest) {
+    kubeConnector.kubeApiEndpoint = 'http://0.0.0.0/kubernetes';
+  }
 
   const context = {
     req,

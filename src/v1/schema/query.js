@@ -58,9 +58,6 @@ type Mutation {
   # Delete Kubernetes Compliance
   deleteCompliance(selfLink: String!, resources: JSON): String
 
-  # NOTE: This deletes the top level Application object and any child resources the user has selected.
-  # Child resources include Deployables, PlacementPolicies, ConfigMaps, ApplicationRelationships and DeployableOverrides.
-  #deleteApplication(path: String!, resources: JSON): String
 }
 
 # Common fields for all Kubernetes objects

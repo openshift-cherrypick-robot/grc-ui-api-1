@@ -17,9 +17,10 @@ type Query {
   # Get all values for the given property. If a query is passed, then results will be filtered to only those matching the query.
   userQueries: [userQuery]
 
-
   # Policies and Compliances
   policies(name: String, clusterName: String): [Policy]
+  policiesInCluster(cluster: String): [Policy]
+  clustersInPolicy(policy: String): [ClusterInfo]
   compliances(name: String, namespace: String): [Compliance]
   placementPolicies (selector: JSON): [PlacementPolicy]
 }

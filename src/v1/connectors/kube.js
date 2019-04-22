@@ -172,9 +172,12 @@ export default class KubeConnector {
   }
 
   // TODO: Allow filtering - 07/25/18 10:48:31 sidney.wijngaarde1@ibm.com
-  async createResourceView(resourceType, clusterName, resourceName, summaryOnly, apiGroup) {
+  async createResourceView(
+    resourceType, clusterName, resourceName,
+    summaryOnly, apiGroup, getClusterNamespace,
+  ) {
     let clusterNamespace;
-    if (resourceName) {
+    if (resourceName || getClusterNamespace) {
       const cluster = await this.getResources(ns => `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/${clusterName}`);
       if (cluster && cluster.length === 1) {
         clusterNamespace = cluster[0].metadata.namespace;
@@ -273,9 +276,14 @@ export default class KubeConnector {
     return { cancel, promise };
   }
 
-  async resourceViewQuery(resourceType, clusterName, name, summaryOnly, apiGroup) {
-    const resource =
-      await this.createResourceView(resourceType, clusterName, name, summaryOnly, apiGroup);
+  async resourceViewQuery(
+    resourceType, clusterName, name, summaryOnly,
+    apiGroup, getClusterNamespace,
+  ) {
+    const resource = await this.createResourceView(
+      resourceType, clusterName,
+      name, summaryOnly, apiGroup, getClusterNamespace,
+    );
     if (resource.status === 'Failure' || resource.code >= 400) {
       throw new Error(`Create Resource View Failed [${resource.code}] - ${resource.message}`);
     }

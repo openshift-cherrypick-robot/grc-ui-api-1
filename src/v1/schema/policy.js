@@ -28,6 +28,17 @@ type Policy implements K8sObject {
   cluster: String
 }
 
+type ClusterInfo implements K8sObject {
+  name: String
+  kind: String
+  apiVersion: String
+  spec: JSON
+  metadata: Metadata
+  status: JSON
+  total: String
+  violated: String
+}
+
 type PolicyDetail {
   exclude_namespace: [String]
   include_namespace: [String]
@@ -68,6 +79,10 @@ export const resolver = {
   Query: {
     policies: (root, args, { complianceModel }) =>
       complianceModel.getPolicies(args.name, args.clusterName),
+    policiesInCluster: (root, args, { complianceModel }) =>
+      complianceModel.getAllPoliciesInCluster(args.cluster),
+    clustersInPolicy: (root, args, { complianceModel }) =>
+      complianceModel.getAllClustersInPolicy(args.policy),
   },
   Policy: {
     detail: parent => ComplianceModel.resolvePolicyDetails(parent),

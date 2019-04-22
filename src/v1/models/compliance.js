@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
  * (c) Copyright IBM Corporation 2018. All Rights Reserved.
@@ -23,6 +24,19 @@ function getTemplates(policy = {}) {
   return templates;
 }
 
+function createStatusResult(data) {
+  const map = new Map();
+  data.forEach((item) => {
+    const { name, status } = item;
+    if (!map.has(name)) {
+      map.set(name, { name, total: 0, violated: 0 });
+    }
+    const exist = map.get(name);
+    const { total, violated } = exist;
+    map.set(name, { name, total: total + 1, violated: violated + (status === 'compliant' ? 0 : 1) });
+  });
+  return [...map.values()];
+}
 
 export default class ComplianceModel {
   constructor({ kubeConnector }) {
@@ -428,6 +442,64 @@ export default class ComplianceModel {
           return [{ ...item, cluster: clusterName, raw: item }];
         }
       }
+    }
+    return [];
+  }
+
+  async getAllPoliciesInCluster(cluster) {
+    // if policy name specified
+    if (cluster !== undefined) {
+      const response = await this.kubeConnector.resourceViewQuery('policy', cluster, undefined, false, undefined, true);
+      const results = _.get(response, 'status.results');
+      if (results) {
+        const item = _.get(results, `${cluster}`, {});
+        if (item) {
+          const result = [];
+          item.items.forEach(policy => result.push({ ...policy, raw: policy }));
+          return result;
+        }
+      }
+    }
+    return [];
+  }
+
+  async getAllClustersInPolicy(policyName) {
+    // if policy name specified
+    const response = await this.kubeConnector.resourceViewQuery('policy', undefined, undefined, false, undefined, false);
+    const results = _.get(response, 'status.results');
+    if (results) {
+      let result = [];
+      const clusterNames = Object.keys(results);
+      for (const cluster of clusterNames) {
+        const item = _.get(results, `${cluster}`, {});
+        const policies = item.items;
+        // eslint-disable-next-line
+        policies.forEach((policy) => {
+          if (_.get(policy, 'metadata.name') === policyName) {
+            if (_.get(policy, 'status.compliant', '').toLowerCase() === 'compliant') {
+              result.push({ name: cluster, status: 'compliant' });
+            } else {
+              result.push({ name: cluster, status: 'violated' });
+            }
+          }
+        });
+      }
+      const [clusters, clusterstatuses] = await Promise.all([
+        this.kubeConnector.getResources(ns => `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters`),
+        this.kubeConnector.getResources(ns => `/apis/mcm.ibm.com/v1alpha1/namespaces/${ns}/clusterstatuses`),
+      ]);
+      const clusterMap = new Map();
+      const clusterStatusMap = new Map();
+      clusters.forEach(cluster => clusterMap.set(_.get(cluster, 'metadata.name', ''), cluster));
+      clusterstatuses.forEach(cluster => clusterStatusMap.set(_.get(cluster, 'metadata.name', ''), cluster));
+      result = createStatusResult(result);
+      result = result.map((item) => {
+        const { name } = item;
+        const info = clusterMap.get(name);
+        const status = clusterStatusMap.get(name);
+        return { ...item, ...info, ...status };
+      });
+      return result;
     }
     return [];
   }

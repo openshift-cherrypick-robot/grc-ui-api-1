@@ -174,7 +174,7 @@ export default class KubeConnector {
   // TODO: Allow filtering - 07/25/18 10:48:31 sidney.wijngaarde1@ibm.com
   async createResourceView(
     resourceType, clusterName, resourceName,
-    summaryOnly, apiGroup, getClusterNamespace,
+    summaryOnly, getClusterNamespace,
   ) {
     let clusterNamespace;
     if (resourceName || getClusterNamespace) {
@@ -183,7 +183,7 @@ export default class KubeConnector {
         clusterNamespace = cluster[0].metadata.namespace;
       }
     }
-    const name = `${resourceType}-${this.uid()}`;
+    const name = `${resourceType}-${this.uid()}`.replace(/\./g, '-');
     const body = {
       apiVersion: 'mcm.ibm.com/v1alpha1',
       kind: 'ResourceView',
@@ -217,9 +217,6 @@ export default class KubeConnector {
       }
     }
 
-    if (apiGroup) {
-      body.spec.scope.apiGroup = apiGroup;
-    }
     return this.post(`/apis/mcm.ibm.com/v1alpha1/namespaces/${this.resourceViewNamespace}/resourceviews`, body);
   }
 
@@ -278,11 +275,11 @@ export default class KubeConnector {
 
   async resourceViewQuery(
     resourceType, clusterName, name, summaryOnly,
-    apiGroup, getClusterNamespace,
+    getClusterNamespace,
   ) {
     const resource = await this.createResourceView(
       resourceType, clusterName,
-      name, summaryOnly, apiGroup, getClusterNamespace,
+      name, summaryOnly, getClusterNamespace,
     );
     if (resource.status === 'Failure' || resource.code >= 400) {
       throw new Error(`Create Resource View Failed [${resource.code}] - ${resource.message}`);

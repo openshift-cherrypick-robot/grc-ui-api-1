@@ -434,7 +434,7 @@ export default class ComplianceModel {
     // if policy name specified
     if (name !== undefined) {
       // use kind when passing the apiGroup
-      const response = await this.kubeConnector.resourceViewQuery('policy', clusterName, name, false, 'policy.mcm.ibm.com');
+      const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com', clusterName, name);
       const results = _.get(response, 'status.results');
       if (results) {
         const item = _.get(results, `${clusterName}`, {});
@@ -449,7 +449,7 @@ export default class ComplianceModel {
   async getAllPoliciesInCluster(cluster) {
     // if policy name specified
     if (cluster !== undefined) {
-      const response = await this.kubeConnector.resourceViewQuery('policy', cluster, undefined, false, undefined, true);
+      const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com', cluster, undefined, false, true);
       const results = _.get(response, 'status.results');
       if (results) {
         const item = _.get(results, `${cluster}`, {});
@@ -465,7 +465,7 @@ export default class ComplianceModel {
 
   async getAllClustersInPolicy(policyName) {
     // if policy name specified
-    const response = await this.kubeConnector.resourceViewQuery('policy', undefined, undefined, false, undefined, false);
+    const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com');
     const results = _.get(response, 'status.results');
     if (results) {
       let result = [];

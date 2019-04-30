@@ -23,12 +23,15 @@ export default class GenericModel extends KubeModel {
           const k8sResourceList = await this.kubeConnector.get(`${apiPath}`);
           const resourceType = k8sResourceList.resources.find(item => item.kind === kind);
           const namespace = _.get(resource, 'metadata.namespace');
-          const { name, namespaced } = resourceType;
-          if (namespaced && !namespace) {
-            return null;
+          if (resourceType) {
+            const { name, namespaced } = resourceType;
+            if (namespaced && !namespace) {
+              return null;
+            }
+            const requestPath = `${apiPath}/${namespaced ? `namespaces/${namespace}/` : ''}${name}`;
+            return requestPath;
           }
-          const requestPath = `${apiPath}/${namespaced ? `namespaces/${namespace}/` : ''}${name}`;
-          return requestPath;
+          return '##cannot find resourcetype##';
         })();
       }
     }
@@ -54,6 +57,11 @@ export default class GenericModel extends KubeModel {
     } else if (requestPaths.includes(null)) {
       return {
         errors: [{ message: 'Namespace not found in the template' }],
+      };
+    } else if (requestPaths.includes('##cannot find resourcetype##')) {
+      const resourceIndex = requestPaths.indexOf('##cannot find resourcetype##');
+      return {
+        errors: [{ message: `Cannot find resource kind "${resources[resourceIndex].kind}"` }],
       };
     }
     const result = await Promise.all(resources.map((resource, index) =>

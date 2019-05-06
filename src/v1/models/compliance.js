@@ -149,7 +149,7 @@ export default class ComplianceModel {
       }
       compliances = complianceResponse.items || [];
       // for getting policy list
-      const policyResponse = await this.kubeConnector.get(`/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('policyNamespace') || 'mcm'}/policies`);
+      const policyResponse = await this.kubeConnector.get(`/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies`);
       if (policyResponse.code || policyResponse.message) {
         logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message}`);
       }

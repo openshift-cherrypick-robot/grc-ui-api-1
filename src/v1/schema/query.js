@@ -14,9 +14,6 @@ type Query {
   namespaces: [Namespace]
   logs(containerName: String!, podName: String!, podNamespace: String!, clusterName: String!): String
 
-  # Get all values for the given property. If a query is passed, then results will be filtered to only those matching the query.
-  userQueries: [userQuery]
-
   # Policies and Compliances
   policies(name: String, clusterName: String): [Policy]
   policiesInCluster(cluster: String): [Policy]

@@ -20,17 +20,19 @@ const jestConfig = {
   collectCoverage: true,
   coverageDirectory: './test-output/coverage',
   coverageReporters: [
+    'json-summary',
     'json',
     'html',
     'lcov',
     'text',
+    'text-summary',
   ],
   coverageThreshold: {
     global: {
-      branches: 10,
-      functions: 10,
-      lines: 10,
-      statements: 10,
+      branches: 29,
+      functions: 29,
+      lines: 29,
+      statements: 29,
     },
   },
   collectCoverageFrom: [

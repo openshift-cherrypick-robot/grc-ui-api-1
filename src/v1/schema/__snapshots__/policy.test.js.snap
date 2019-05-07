@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Policy Resolver Correctly Resolves Create Policy Mutation 1`] = `
+Object {
+  "data": Object {
+    "createPolicy": Array [
+      Object {},
+    ],
+  },
+}
+`;
+
+exports[`Policy Resolver Correctly Resolves Delete Policy Mutation 1`] = `
+Object {
+  "data": Object {
+    "deletePolicy": null,
+  },
+  "errors": Array [
+    Object {
+      "locations": Array [
+        Object {
+          "column": 11,
+          "line": 3,
+        },
+      ],
+      "message": "Nock: No match for request {
+  \\"method\\": \\"DELETE\\",
+  \\"url\\": \\"http://0.0.0.0/kubernetes/apis/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies/test-policy\\",
+  \\"headers\\": {
+    \\"authorization\\": \\"Bearer localdev\\",
+    \\"host\\": \\"0.0.0.0\\",
+    \\"accept\\": \\"application/json\\",
+    \\"content-length\\": 0
+  }
+}",
+      "path": Array [
+        "deletePolicy",
+      ],
+    },
+  ],
+}
+`;
+
+exports[`Policy Resolver Correctly Resolves Policy List Query 1`] = `
+Object {
+  "data": Object {
+    "policies": Array [],
+  },
+}
+`;
+
+exports[`Policy Resolver Correctly Resolves Single Policy Query 1`] = `
+"Nock: No match for request {
+  \\"method\\": \\"POST\\",
+  \\"url\\": \\"http://0.0.0.0/kubernetes/apis/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews\\",
+  \\"headers\\": {
+    \\"authorization\\": \\"Bearer localdev\\",
+    \\"host\\": \\"0.0.0.0\\",
+    \\"accept\\": \\"application/json\\",
+    \\"content-type\\": \\"application/json\\",
+    \\"content-length\\": 319
+  },
+  \\"body\\": \\"{\\\\\\"apiVersion\\\\\\":\\\\\\"mcm.ibm.com/v1alpha1\\\\\\",\\\\\\"kind\\\\\\":\\\\\\"ResourceView\\\\\\",\\\\\\"metadata\\\\\\":{\\\\\\"labels\\\\\\":{\\\\\\"name\\\\\\":\\\\\\"policies-policy-mcm-ibm-com-\\\\\\"},\\\\\\"name\\\\\\":\\\\\\"policies-policy-mcm-ibm-com-\\\\\\"},\\\\\\"spec\\\\\\":{\\\\\\"summaryOnly\\\\\\":false,\\\\\\"scope\\\\\\":{\\\\\\"resource\\\\\\":\\\\\\"policies.policy.mcm.ibm.com\\\\\\"},\\\\\\"clusterSelector\\\\\\":{\\\\\\"matchLabels\\\\\\":{\\\\\\"name\\\\\\":\\\\\\"cluster1\\\\\\"}}}}\\"
+}"
+`;

@@ -17,7 +17,6 @@ import * as namespace from './namespace';
 import * as policy from './policy';
 import * as genericResources from './generic-resources';
 import * as query from './query';
-import * as userQuery from './user-query';
 
 const modules = [
   placements,
@@ -27,7 +26,6 @@ const modules = [
   policy,
   query,
   genericResources,
-  userQuery,
 ];
 
 const mainDefs = [`

@@ -94,7 +94,11 @@ export default class KubeConnector {
       }
 
       if (response.code || response.message) {
-        logger.error(`MCM ERROR ${response.code} - ${response.message}`);
+        if (response.code === 404) {
+          logger.info(`MCM INFO ${response.code} - ${response.message}`);
+        } else {
+          logger.error(`MCM ERROR ${response.code} - ${response.message}`);
+        }
         return [];
       }
 

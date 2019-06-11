@@ -37,6 +37,7 @@ type ClusterInfo implements K8sObject {
   status: JSON
   total: String
   violated: String
+  policy: JSON
 }
 
 type PolicyDetail {

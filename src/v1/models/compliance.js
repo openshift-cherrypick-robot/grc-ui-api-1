@@ -467,6 +467,7 @@ export default class ComplianceModel {
     // if policy name specified
     const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com');
     const results = _.get(response, 'status.results');
+    const policiesMap = new Map();
     if (results) {
       let result = [];
       const clusterNames = Object.keys(results);
@@ -475,12 +476,13 @@ export default class ComplianceModel {
         const policies = item.items;
         // eslint-disable-next-line
         policies.forEach((policy) => {
-          if (_.get(policy, 'metadata.name') === policyName) {
+          if (_.get(policy, 'metadata.name') === policyName && _.get(policy, 'metadata.namespace') === cluster) {
             if (_.get(policy, 'status.compliant', '').toLowerCase() === 'compliant') {
               result.push({ name: cluster, status: 'compliant' });
             } else {
               result.push({ name: cluster, status: 'violated' });
             }
+            policiesMap.set(cluster, policy);
           }
         });
       }
@@ -491,13 +493,17 @@ export default class ComplianceModel {
       const clusterMap = new Map();
       const clusterStatusMap = new Map();
       clusters.forEach(cluster => clusterMap.set(_.get(cluster, 'metadata.name', ''), cluster));
-      clusterstatuses.forEach(cluster => clusterStatusMap.set(_.get(cluster, 'metadata.name', ''), cluster));
+      clusterstatuses.forEach((cluster) => {
+        clusterStatusMap.set(_.get(cluster, 'metadata.name', ''), { metadata: _.get(cluster, 'metadata'), spec: { consoleURL: _.get(cluster, 'spec.consoleURL') } });
+      });
       result = createStatusResult(result);
       result = result.map((item) => {
         const { name } = item;
         const info = clusterMap.get(name);
         const status = clusterStatusMap.get(name);
-        return { ...item, ...info, ...status };
+        return {
+          ...item, ...info, ...status, policy: policiesMap.get(name),
+        };
       });
       return result;
     }

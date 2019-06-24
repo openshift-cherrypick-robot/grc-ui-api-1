@@ -1,14 +1,17 @@
 sudo: required
 language: node_js
 
-os:
-  - linux-ppc64le
-  - linux
+matrix:
+  include:
+    - os: linux-ppc64le
+      env: OSARCH=linux-ppc64le
+      dist: trusty
+    - os: linux
+      env: OSARCH=linux-amd64
+      dist: trusty
 
 cache:
   apt: true
-  directories:
-    - "$TRAVIS_CACHE_DIR"
 
 branches:
   only:
@@ -22,27 +25,24 @@ services:
   - docker
 
 before_install:
-  # - "export DISPLAY=:99.0"
-  # - "sh -e /etc/init.d/xvfb start"
   - make init
-  - make cicd-log-init
-  - source travis-env.sh
-  - chmod +x copyright-check.sh
 
 install:
-  - make install
+  - npm install
+  - chmod +x copyright-check.sh
+  - make copyright-check
+  - make lint
 
 before_script:
   - make test
-
-script:
-  - make copyright-check
-  - make docker-login-edge
+  - make local
   - make image
 
+script:
+  - make run
+
 after_success:
-  - make docker-login
-  - make push
+  - test "$TRAVIS_EVENT_TYPE" = "pull_request" && make push || echo "pushing to scratch"
   - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make release || echo "success"
   - |
       if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
@@ -52,17 +52,13 @@ after_success:
         if [[ "$BUILD_LEADER" == "YES" ]]; then
           if [[ "$BUILD_AGGREGATE_STATUS" == "others_succeeded" ]]; then
             echo "All jobs succeeded! Creating multi arch image..."
-            make manifest-tool
-            make multi-arch
+            make docker:manifest-tool
+            make docker:multi-arch
           else
             echo "Some jobs failed" && exit 1
           fi
         fi
       fi
-  - make cicd-log-success
-
-after_failure:
-  - make cicd-log-fail
 
 notifications:
   slack:

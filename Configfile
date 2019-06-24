@@ -39,15 +39,17 @@ IMAGE_OPENSHIFT_TAGS=GRC UI API
 DOCKER_EDGE_REGISTRY ?=hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com
 DOCKER_SCRATCH_REGISTRY ?=hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com
 DOCKER_INTEGRATION_REGISTRY ?=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
+DOCKER_REGISTRY ?=$(DOCKER_INTEGRATION_REGISTRY)
 
-DOCKER_SERVER ?=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
+DOCKER_SERVER ?=$(DOCKER_INTEGRATION_REGISTRY)
 DOCKER_NAMESPACE ?=ibmcom
 DOCKER_USERNAME ?=$(GITHUB_USER)
 DOCKER_USER ?=$(DOCKER_USERNAME)
 DOCKER_PASSWORD ?=
 DOCKER_PASS ?=$(DOCKER_PASSWORD)
 DOCKER_BUILD_TAG ?=$(IMAGE_VERSION)
-DOCKER_TAG ?=
+SCRATCH_TAG ?=$(DOCKER_BUILD_TAG)
+DOCKER_TAG ?=$(RELEASE_TAG)
 DOCKER_IMAGE ?=$(IMAGE_NAME)
 DOCKER_IMAGE_ARCH ?=$(IMAGE_NAME_ARCH)
 

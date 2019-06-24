@@ -48,16 +48,18 @@ ifeq ($(UNIT_TESTS), TRUE)
 	# @$(SELF) log:test LOG_TEST_OUTPUT_DIR=test-output
 endif
 
+#Check default DOCKER_REGISTRY/DOCKER_BUILD_TAG/SCRATCH_TAG/DOCKER_TAG values in Configfile
+#Only new value other than default need to be set here
 .PHONY: docker-logins
 docker-logins:
 	make docker:login DOCKER_REGISTRY=$(DOCKER_EDGE_REGISTRY)
 	make docker:login DOCKER_REGISTRY=$(DOCKER_SCRATCH_REGISTRY)
-	make docker:login DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY)
+	make docker:login
 
 .PHONY: image
 image:: docker-logins
-	make docker:info DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY)
-	make docker:build DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY)
+	make docker:info
+	make docker:build
 	docker image ls -a
 
 .PHONY: run
@@ -67,15 +69,15 @@ run:
 .PHONY: push
 push:
 	make docker:login DOCKER_REGISTRY=$(DOCKER_SCRATCH_REGISTRY)
-	make docker:tag-arch DOCKER_REGISTRY=$(DOCKER_SCRATCH_REGISTRY)
-	make docker:push-arch DOCKER_REGISTRY=$(DOCKER_SCRATCH_REGISTRY)
+	make docker:tag-arch DOCKER_REGISTRY=$(DOCKER_SCRATCH_REGISTRY) DOCKER_TAG=$(SCRATCH_TAG)
+	make docker:push-arch DOCKER_REGISTRY=$(DOCKER_SCRATCH_REGISTRY) DOCKER_TAG=$(SCRATCH_TAG)
 
 .PHONY: release
 release:
-	make docker:login DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY)
-	make docker:tag-arch DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY) DOCKER_TAG=$(RELEASE_TAG)
-	make docker:push-arch DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY) DOCKER_TAG=$(RELEASE_TAG)
+	make docker:login
+	make docker:tag-arch
+	make docker:push-arch
 ifeq ($(ARCH), x86_64)
-	make docker:tag-arch DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY) DOCKER_TAG=$(RELEASE_TAG_RED_HAT)
-	make docker:push-arch DOCKER_REGISTRY=$(DOCKER_INTEGRATION_REGISTRY) DOCKER_TAG=$(RELEASE_TAG_RED_HAT)
+	make docker:tag-arch DOCKER_TAG=$(RELEASE_TAG_RED_HAT)
+	make docker:push-arch DOCKER_TAG=$(RELEASE_TAG_RED_HAT)
 endif

@@ -18,11 +18,14 @@ type Compliance implements K8sObject {
   metadata: Metadata
   policyCompliant: String
   raw: JSON
+  annotations: JSON
   placementPolicies: [PlacementPolicy]
   placementBindings: [PlacementBinding]
   name: String
   namespace: String
   remediation: String
+  clusters: [String]
+  allTemplates: [MixedTemplate]
 }
 
 type CompliantStatus {
@@ -81,6 +84,17 @@ type CompliancePolicy implements K8sObject {
   message: String
 }
 
+type MixedTemplate {
+  apiVersion: String
+  complianceType: String
+  metadata: JSON
+  rules: JSON
+  selector: JSON
+  status: JSON
+  templateType: String
+  objectDefinition: JSON
+}
+
 `;
 
 export const resolver = {
@@ -94,10 +108,13 @@ export const resolver = {
     complianceStatus: parent => ComplianceModel.resolveComplianceStatus(parent),
     policyCompliant: parent => ComplianceModel.resolvePolicyCompliant(parent),
     clusterCompliant: parent => ComplianceModel.resolveClusterCompliant(parent),
+    annotations: parent => ComplianceModel.resolveAnnotations(parent),
     placementPolicies: (parent, args, { complianceModel }) =>
       complianceModel.getPlacementPolicies(parent),
     placementBindings: (parent, args, { complianceModel }) =>
       complianceModel.getPlacementBindings(parent),
+    allTemplates: (parent, args, { complianceModel }) =>
+      complianceModel.getAllTemplates(parent),
   },
   Mutation: {
     createCompliance: (root, args, { complianceModel }) =>

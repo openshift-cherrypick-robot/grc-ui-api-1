@@ -14,10 +14,10 @@ import config from '../../../config';
 
 const POLICY_FAILURE_STATUS = 'Failure';
 
-function getTemplates(policy = {}) {
+function getTemplates(policy = {}, templateType = '') {
   const templates = [];
   Object.entries(policy.spec || []).forEach(([key, value]) => {
-    if (key.endsWith('-templates')) {
+    if (key.endsWith(`${templateType}-templates`)) {
       value.forEach(item => templates.push({ ...item, templateType: key }));
     }
   });
@@ -157,8 +157,8 @@ export default class ComplianceModel {
     } else {
       // get single compliance with a specific name - walkaround of no type field
       const complianceResponse = await this.kubeConnector.get(`/apis/compliance.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/compliances/${name}`);
-      if (complianceResponse.code || complianceResponse.message) {
-        logger.error(`GRC ERROR ${complianceResponse.code} - ${complianceResponse.message}`);
+      if (complianceResponse.code || complianceResponse.message || typeof (complianceResponse) === 'string') {
+        logger.error(`GRC ERROR ${complianceResponse.code} - ${complianceResponse.message} - ${complianceResponse}`);
       } else {
         compliances.push(complianceResponse);
       }
@@ -177,6 +177,7 @@ export default class ComplianceModel {
       name: _.get(entry, 'metadata.name', ''),
       namespace: _.get(entry, 'metadata.namespace', ''),
       remediation: _.get(entry, 'spec.remediationAction', ''),
+      clusters: _.keys(_.get(entry, 'status.status'), ''),
     }));
   }
 
@@ -196,10 +197,11 @@ export default class ComplianceModel {
   }
 
   static resolveCompliancePoliciesFromSpec(parent, aggregatedStatus) {
-    const compliancePolicies = [];
+    const compliancePolicies = {};
     const policies = _.get(parent, 'spec.runtime-rules') ? _.get(parent, 'spec.runtime-rules') : [parent];
     policies.forEach((policy) => {
-      compliancePolicies.push({
+      const key = _.get(policy, 'metadata.name');
+      const value = {
         name: _.get(policy, 'metadata.name'),
         complianceName: _.get(parent, 'metadata.name'),
         complianceNamespace: _.get(parent, 'metadata.namespace'),
@@ -210,8 +212,10 @@ export default class ComplianceModel {
         policyTemplates: this.resolvePolicyTemplates(policy, 'policy-templates'),
         detail: this.resolvePolicyDetails(policy),
         raw: policy,
-      });
+      };
+      compliancePolicies[key] = value;
     });
+
 
     if (aggregatedStatus) {
       Object.values(aggregatedStatus).forEach((cluster) => {
@@ -237,6 +241,7 @@ export default class ComplianceModel {
         });
       });
     }
+
     return Object.values(compliancePolicies);
   }
 
@@ -376,6 +381,15 @@ export default class ComplianceModel {
     return '0/0';
   }
 
+  static resolveAnnotations(parent) {
+    const rawAnnotations = _.get(parent, 'metadata.annotations', {});
+    const annotations = {};
+    annotations.categories = _.get(rawAnnotations, 'policy.mcm.ibm.com/categories', '-');
+    annotations.controls = _.get(rawAnnotations, 'policy.mcm.ibm.com/controls', '-');
+    annotations.standards = _.get(rawAnnotations, 'policy.mcm.ibm.com/standards', '-');
+    return annotations;
+  }
+
   async getPlacementPolicies(parent = {}) {
     const policies = _.get(parent, 'status.placementPolicies', []);
     const response = await this.kubeConnector.getResources(
@@ -428,6 +442,33 @@ export default class ComplianceModel {
       }
     });
     return placementBindings;
+  }
+
+  async getAllTemplates(policyName) {
+    const allViolationsArray = [];
+    if (policyName === null) {
+      return allViolationsArray;
+    }
+    const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com');
+    const clusterResults = _.get(response, 'status.results');
+    const roleTemplates = [];
+    const policyTemplates = [];
+    _.forIn(clusterResults, (value) => {
+      const paresdValues = _.get(value, 'items');
+      paresdValues.forEach((policy) => {
+        const roleTemplateResult = getTemplates(policy, 'role');
+        const policyTemplateResult = getTemplates(policy, 'object');
+        if (roleTemplateResult.length > 0) {
+          roleTemplates.push(roleTemplateResult);
+        } else if (policyTemplateResult.length > 0) {
+          policyTemplates.push(policyTemplateResult);
+        }
+      });
+    });
+    let allTemplates = _.flattenDeep(roleTemplates);
+    allTemplates = allTemplates.concat(_.flattenDeep(policyTemplates));
+
+    return allTemplates;
   }
 
   async getPolicies(name, clusterName) {
@@ -508,6 +549,28 @@ export default class ComplianceModel {
       return result;
     }
     return [];
+  }
+
+  async getAllViolationsInPolicy(policyName) {
+    const resultsWithPolicyName = [];
+    if (policyName === null) {
+      return resultsWithPolicyName;
+    }
+    const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com');
+    const clusterResults = _.get(response, 'status.results');
+    _.forIn(clusterResults, (value, key) => {
+      const paresdValues = _.get(value, 'items');
+      paresdValues.forEach((val) => {
+        if (val.metadata.name === policyName) {
+          const resultInOneCluster = ComplianceModel.resolvePolicyViolations(val, key);
+          if (resultInOneCluster[0].status === 'NonCompliant') {
+            resultInOneCluster[0].cluster = key;
+            resultsWithPolicyName.push(resultInOneCluster[0]);
+          }
+        }
+      });
+    });
+    return resultsWithPolicyName;
   }
 
 

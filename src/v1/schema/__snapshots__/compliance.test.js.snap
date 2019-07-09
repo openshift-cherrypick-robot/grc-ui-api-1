@@ -1034,6 +1034,7 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusters": Array [],
               "kind": "Policy",
               "metadata": Object {
                 "creationTimestamp": "2018-09-04T16:13:50Z",

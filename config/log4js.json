@@ -4,13 +4,13 @@
 			"type": "console",
 			"layout": {
 				"type": "pattern",
-				"pattern": "[%d] [%p] [grc-ui-api] [%c] %m"
+				"pattern": "[%d] [%p] [grc-ui-api] [%c] %m [%f] line %l "
 			}
 		}
 	},
 	"categories": {
-		"default": { "appenders": ["console"], "level": "info" },
-		"request": { "appenders": ["console"], "level": "error" },
-		"hcm-client": { "appenders": ["console"], "level": "debug" }
+		"default": { "appenders": ["console"], "level": "info", "enableCallStack": true },
+		"request": { "appenders": ["console"], "level": "error", "enableCallStack": true },
+		"hcm-client": { "appenders": ["console"], "level": "debug", "enableCallStack": true  }
 	}
 }

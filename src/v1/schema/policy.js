@@ -84,6 +84,8 @@ export const resolver = {
       complianceModel.getAllPoliciesInCluster(args.cluster),
     clustersInPolicy: (root, args, { complianceModel }) =>
       complianceModel.getAllClustersInPolicy(args.policy),
+    violationsInPolicy: (root, args, { complianceModel }) =>
+      complianceModel.getAllViolationsInPolicy(args.policy),
   },
   Policy: {
     detail: parent => ComplianceModel.resolvePolicyDetails(parent),

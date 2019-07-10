@@ -9,6 +9,9 @@ matrix:
     - os: linux
       env: OSARCH=linux-amd64
       dist: trusty
+    - os: linux-s390
+      env: OSARCH=linux-s390
+      dist: trusty
 
 cache:
   apt: true

@@ -21,6 +21,9 @@ type Query {
   violationsInPolicy(policy: String): [Violations]
   compliances(name: String, namespace: String): [Compliance]
   placementPolicies (selector: JSON): [PlacementPolicy]
+
+  # sa
+  occurrences: [Occurrence]
 }
 
 type Mutation {

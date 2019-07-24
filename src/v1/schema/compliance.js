@@ -32,6 +32,7 @@ type CompliantStatus {
   clusterNamespace: String
   localCompliantStatus: String
   localValidStatus: String
+  compliant: String
 }
 
 

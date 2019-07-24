@@ -349,6 +349,7 @@ export default class ComplianceModel {
           clusterNamespace: clusterName,
           localCompliantStatus: `${compliantNum}/${policyNum}`,
           localValidStatus: `${validNum}/${policyNum}`,
+          compliant: _.get(perClusterStatus, 'compliant', '-'),
         });
       }
     });

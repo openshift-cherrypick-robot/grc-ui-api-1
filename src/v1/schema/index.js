@@ -1,6 +1,6 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -10,6 +10,7 @@
 import _ from 'lodash';
 import { makeExecutableSchema } from 'graphql-tools';
 
+import * as creation from './creation';
 import * as placements from './placement';
 import * as compliance from './compliance';
 import * as json from './json';
@@ -20,6 +21,7 @@ import * as query from './query';
 import * as occurrence from './occurrence';
 
 const modules = [
+  creation,
   placements,
   compliance,
   json,

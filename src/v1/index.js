@@ -1,6 +1,6 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -21,6 +21,7 @@ import logger from './lib/logger';
 
 import KubeConnector from './connectors/kube';
 
+import ClusterModel from './models/cluster';
 import PlacementModel from './models/placement';
 import GenericModel from './models/generic';
 import QueryModel from './models/userquery';
@@ -92,6 +93,7 @@ graphQLServer.use(GRAPHQL_PATH, bodyParser.json(), graphqlExpress(async (req) =>
 
   const context = {
     req,
+    clusterModel: new ClusterModel({ kubeConnector }),
     PlacementModel: new PlacementModel({ kubeConnector }),
     genericModel: new GenericModel({ kubeConnector }),
     queryModel: new QueryModel({ kubeConnector, req }),

@@ -1,6 +1,6 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -13,6 +13,7 @@ type Query {
   #applications(name: String, namespace: String): [Application]
   namespaces: [Namespace]
   logs(containerName: String!, podName: String!, podNamespace: String!, clusterName: String!): String
+  existing: Existing
 
   # Policies and Compliances
   policies(name: String, clusterName: String): [Policy]

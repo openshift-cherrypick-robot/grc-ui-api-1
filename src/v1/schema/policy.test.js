@@ -10,29 +10,43 @@
 import supertest from 'supertest';
 import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
-import { mockPolicyListResponse, mockSinglePolicyResponse, mockCreatePolicy, mockDeleteResponse } from '../mocks/PolicyList';
-
-function sliceIngoreEscape(str, remover, len, flag) {
-  const index = flag ? str.indexOf(remover) : str.lastIndexOf(remover);
-  return str.substring(0, index + remover.length)
-  + str.substring(index + remover.length + len);
-}
+import {
+  mockPolicyListResponse, mockSinglePolicyResponse, mockCreatePolicy, mockDeleteResponse,
+  mockClusterListResponse, mockViolationListResponse, mockCreateResourcePost, mockCreateResourceGet,
+  mockCompletedResourceView,
+} from '../mocks/PolicyList';
 
 describe('Policy Resolver', () => {
   beforeAll(() => {
     // specify the url to be intercepted
     const APIServer = nock('http://0.0.0.0/kubernetes/apis');
 
-    APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+    APIServer.persist()
+      .post('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews')
+      .reply(200, mockCreateResourcePost);
+
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews?fieldSelector=metadata.name=policies-policy-mcm-ibm-com-1563995392802')
+      .reply(200, mockCreateResourceGet);
+
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews/policies-policy-mcm-ibm-com-1563995392802')
+      .reply(200, mockCompletedResourceView);
+
+    APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
       .reply(200, mockPolicyListResponse);
 
-    APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+    APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies/policy-all')
       .reply(200, mockSinglePolicyResponse);
 
-    APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+    APIServer.post('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
       .reply(200, mockCreatePolicy);
 
-    APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/mcm/clusterstatuses')
+      .reply(200, mockClusterListResponse);
+
+    APIServer.post('/policies.policy.mcm.ibm.com')
+      .reply(200, mockViolationListResponse);
+
+    APIServer.delete('/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies/test-policy')
       .reply(200, mockDeleteResponse);
   });
 
@@ -140,10 +154,7 @@ describe('Policy Resolver', () => {
       `,
       })
       .end((err, res) => {
-        let textMessage = JSON.parse(res.text);
-        textMessage = sliceIngoreEscape(textMessage.errors[0].message, 'policies-policy-mcm-ibm-com-', 13, true);
-        textMessage = sliceIngoreEscape(textMessage, 'policies-policy-mcm-ibm-com-', 13, false);
-        expect(textMessage).toMatchSnapshot();
+        expect(JSON.parse(res.text)).toMatchSnapshot();
         done();
       });
   });
@@ -244,6 +255,62 @@ describe('Policy Resolver', () => {
               ],
             },
           }]),
+        }
+      `,
+      })
+      .end((err, res) => {
+        expect(JSON.parse(res.text)).toMatchSnapshot();
+        done();
+      });
+  });
+
+  test('Correctly Resolves Cluster List Query', (done) => {
+    supertest(server)
+      .post(GRAPHQL_PATH)
+      .send({
+        query: `
+        {
+          clustersInPolicy(policy: "policy-role") {
+            name
+            metadata {
+              labels
+              name
+              namespace
+              annotations
+              uid
+              selfLink
+            }
+            kind
+            apiVersion
+            spec
+            status
+            total
+            violated
+            policy
+          }
+        }
+      `,
+      })
+      .end((err, res) => {
+        expect(JSON.parse(res.text)).toMatchSnapshot();
+        done();
+      });
+  });
+
+  test('Correctly Resolves Violations List Query', (done) => {
+    supertest(server)
+      .post(GRAPHQL_PATH)
+      .send({
+        query: `
+        {
+          violationsInPolicy(policy: "policy-role") {
+            cluster
+            message
+            name
+            reason
+            selector
+            status
+          }
         }
       `,
       })

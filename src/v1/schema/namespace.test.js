@@ -11,6 +11,7 @@ import supertest from 'supertest';
 import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
 import { mockResourceView, mockResponse } from '../mocks/NamespaceList';
+import { mockResource } from '../mocks/PolicyList';
 
 function sliceIngoreEscape(str, remover, len, flag) {
   const index = flag ? str.indexOf(remover) : str.lastIndexOf(remover);
@@ -24,6 +25,8 @@ describe('Namespace Resolver', () => {
     const APIServer = nock('http://0.0.0.0/kubernetes/apis');
 
     // define the method to be intercepted
+    APIServer.post('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews')
+      .reply(200, mockResource);
     APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/namespaces')
       .reply(200, mockResourceView);
     APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/namespaces')

@@ -133,7 +133,6 @@ export default class KubeConnector {
       },
       json: jsonBody,
     };
-
     return this.http(_.merge(defaults, opts)).then(res => res.body);
   }
 
@@ -220,7 +219,6 @@ export default class KubeConnector {
         };
       }
     }
-
     return this.post(`/apis/mcm.ibm.com/v1alpha1/namespaces/${this.resourceViewNamespace}/resourceviews`, body);
   }
 
@@ -243,7 +241,6 @@ export default class KubeConnector {
             const links = resourceViewLink.split('/');
             const resourceViewName = links.pop();
             const link = `${links.join('/')}?fieldSelector=metadata.name=${resourceViewName}`;
-
             const response = await this.get(link, {}, true);
             pendingRequest = false;
             if (response.code || response.message) {
@@ -289,7 +286,6 @@ export default class KubeConnector {
       throw new Error(`Create Resource View Failed [${resource.code}] - ${resource.message}`);
     }
     const { cancel, promise: pollPromise } = this.pollView(_.get(resource, 'metadata.selfLink'));
-
     try {
       const result = await Promise.race([pollPromise, this.timeout()]);
       if (result) {

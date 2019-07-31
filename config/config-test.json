@@ -1,3 +1,4 @@
 {
-  "localKubeToken": "localdev"
+  "localKubeToken": "localdev",
+  "cfcRouterUrl": "http://0.0.0.0"
 }

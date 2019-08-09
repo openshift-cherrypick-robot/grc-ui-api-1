@@ -6,11 +6,13 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+import config from '../../../config';
 
 export const typeDef = `
 type Existing {
   clusterLabels: JSON
   compliances: [ExistingCompliance]
+  placements: [ExistingPlacements]
 }
 
 type ExistingCompliance {
@@ -19,12 +21,17 @@ type ExistingCompliance {
   annotations: JSON
   spec: JSON
 }
+
+type ExistingPlacements {
+  name: String
+  clusterLabels: JSON
+}
 `;
 
 export const resolver = {
   Query: {
     existing: async (root, args, {
-      clusterModel, complianceModel,
+      clusterModel, complianceModel, PlacementModel,
     }) => {
       // existing cluster labels
       const labelMap = {};
@@ -34,7 +41,9 @@ export const resolver = {
       }) => {
         const { labels } = metadata;
         Object.entries(labels).forEach(([key, value]) => {
-          labelMap[`${key}=${value}`] = { key, value };
+          if (key !== 'name') {
+            labelMap[`${key}=${value}`] = { key, value };
+          }
         });
       });
       const clusterLabels = Object.values(labelMap);
@@ -53,8 +62,21 @@ export const resolver = {
         };
       });
 
+      // existing compliance placements
+      const complianceNamespace = config.get('complianceNamespace') || 'mcm';
+      let placements = await PlacementModel.getPlacementPolicies();
+      placements = placements
+        .filter(({ metadata: { namespace } }) => namespace === complianceNamespace)
+        .map(({ clusterLabels: cl, metadata = {} }) => {
+          const { name } = metadata;
+          return {
+            name,
+            clusterLabels: cl,
+          };
+        });
+
       return {
-        clusterLabels, compliances,
+        clusterLabels, compliances, placements,
       };
     },
   },

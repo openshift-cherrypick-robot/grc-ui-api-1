@@ -35,6 +35,10 @@ describe('Occurrences Resolver', () => {
             updateTime
             createTime
             shortDescription
+            longDescription
+            providerId
+            providerName
+            remediation
             context
             reportedBy
             finding

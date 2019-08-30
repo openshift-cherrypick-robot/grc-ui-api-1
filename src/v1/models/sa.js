@@ -29,7 +29,11 @@ export default class SAModel extends KubeModel {
           noteName 
           updateTime 
           createTime 
-          shortDescription 
+          shortDescription
+          longDescription
+          providerId
+          providerName
+          remediation 
           context {
             accountId 
             region 

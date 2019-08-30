@@ -14,6 +14,10 @@ type Occurrence {
   updateTime: String
   createTime: String
   shortDescription: String
+  longDescription: String
+  providerId: String
+  providerName: String
+  remediation: String
   context: JSON
   reportedBy: JSON
   finding: JSON

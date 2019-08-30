@@ -17,6 +17,10 @@ export const mockOccurrences = {
         updateTime: '2019-07-10T14:07:46.596382Z',
         createTime: '2019-07-10T14:07:46.596357Z',
         shortDescription: 'Registered services1',
+        longDescription: 'MCM Policy that is not compliant',
+        providerId: 'security-advisor',
+        providerName: 'id-mycluster-account/providers/security-advisor',
+        remediation: 'NonCompliant; Non-compliant certificatepolicies (expires in less than 50h0m0s) in kube-system[1]: [test-policy-cert, test-policy-cert-secret]',
         context: {
           accountId: 'id-mycluster-account',
           region: 'location',

@@ -28,8 +28,12 @@ Object {
           ],
           "severity": "HIGH",
         },
+        "longDescription": "MCM Policy that is not compliant",
         "name": "id-mycluster-account/providers/securityAdvisorNewProviderId/occurrences/securityAdvisorOccurrenceId",
         "noteName": "id-mycluster-account/providers/securityAdvisorNewProviderId/notes/securityAdvisorNoteID",
+        "providerId": "security-advisor",
+        "providerName": "id-mycluster-account/providers/security-advisor",
+        "remediation": "NonCompliant; Non-compliant certificatepolicies (expires in less than 50h0m0s) in kube-system[1]: [test-policy-cert, test-policy-cert-secret]",
         "reportedBy": Object {
           "id": "securityAdvisorNewProviderId",
           "title": "Title for Note",

@@ -137,17 +137,9 @@ export default class ComplianceModel {
   }
 
   async getCompliances(name, namespace) {
-    let compliancesAndPolicies = [];
-    let compliances = [];
     let policies = [];
 
     if (!name) {
-      // for getting compliance list
-      const complianceResponse = await this.kubeConnector.get(`/apis/compliance.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/compliances`);
-      if (complianceResponse.code || complianceResponse.message) {
-        logger.error(`GRC ERROR ${complianceResponse.code} - ${complianceResponse.message}`);
-      }
-      compliances = complianceResponse.items || [];
       // for getting policy list
       const policyResponse = await this.kubeConnector.get(`/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies`);
       if (policyResponse.code || policyResponse.message) {
@@ -155,13 +147,6 @@ export default class ComplianceModel {
       }
       policies = policyResponse.items || [];
     } else {
-      // get single compliance with a specific name - walkaround of no type field
-      const complianceResponse = await this.kubeConnector.get(`/apis/compliance.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/compliances/${name}`);
-      if (complianceResponse.code || complianceResponse.message || typeof (complianceResponse) === 'string') {
-        logger.error(`GRC ERROR ${complianceResponse.code} - ${complianceResponse.message} - ${complianceResponse}`);
-      } else {
-        compliances.push(complianceResponse);
-      }
       // get single policy with a specific name - walkaround of no type field
       const policyResponse = await this.kubeConnector.get(`/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies/${name}`);
       if (policyResponse.code || policyResponse.message) {
@@ -170,8 +155,7 @@ export default class ComplianceModel {
         policies.push(policyResponse);
       }
     }
-    compliancesAndPolicies = compliances.concat(policies);
-    return compliancesAndPolicies.map(entry => ({
+    return policies.map(entry => ({
       ...entry,
       raw: entry,
       name: _.get(entry, 'metadata.name', ''),

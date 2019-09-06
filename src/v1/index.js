@@ -56,7 +56,11 @@ const requestLogger = isProd ?
   })
   : morgan('dev');
 
-graphQLServer.use('*', helmet(), requestLogger, cookieParser());
+graphQLServer.use('*', helmet({// These headers are dealt with in icp-management-ingress
+  frameguard: false,
+  noSniff: false,
+  xssFilter: false,
+}), requestLogger, cookieParser());
 
 graphQLServer.get('/livenessProbe', (req, res) => {
   res.send(`Testing livenessProbe --> ${new Date().toLocaleString()}`);

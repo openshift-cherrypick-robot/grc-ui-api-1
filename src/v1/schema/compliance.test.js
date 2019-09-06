@@ -11,7 +11,7 @@ import supertest from 'supertest';
 import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
 import { mockComplianceListResponse, mockCreateCompliance } from '../mocks/ComplianceList';
-import { mockPlacementBindingResponse, mockPlacementPolicyResponse, mockPolicyListResponse, mockSinglePolicyResponse } from '../mocks/PolicyList';
+import { mockPlacementBindingResponse, mockPlacementPolicyResponse, mockSinglePolicyResponse } from '../mocks/PolicyList';
 
 
 describe('Compliance Resolver', () => {
@@ -22,11 +22,8 @@ describe('Compliance Resolver', () => {
 
     // Compliance / Policy list
     // define the method to be intercepted
-    APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/compliances')
-    // respond with a OK and the specified JSON response
-      .reply(200, mockComplianceListResponse);
     APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
-      .reply(200, mockPolicyListResponse);
+      .reply(200, mockComplianceListResponse);
 
 
     // Single compliance / policy

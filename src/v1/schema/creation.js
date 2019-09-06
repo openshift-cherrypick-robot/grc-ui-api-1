@@ -41,9 +41,7 @@ export const resolver = {
       }) => {
         const { labels } = metadata;
         Object.entries(labels).forEach(([key, value]) => {
-          if (key !== 'name') {
-            labelMap[`${key}=${value}`] = { key, value };
-          }
+          labelMap[`${key}=${value}`] = { key, value };
         });
       });
       const clusterLabels = Object.values(labelMap);

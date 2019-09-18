@@ -110,7 +110,7 @@ export default function createAuthMiddleWare({
       };
 
       const response = await httpLib(options);
-      userName = _.get(response, 'body.name');
+      userName = _.get(response, 'body.name') || _.get(response, 'body.sub');
       if (!userName) {
         throw new Error(`Authentication error: ${response.body}`);
       }

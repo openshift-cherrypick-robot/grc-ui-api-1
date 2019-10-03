@@ -75,7 +75,7 @@ async function getNamespaces({ iamToken, user }) {
 export default function createAuthMiddleWare({
   cache = lru({
     max: 1000,
-    maxAge: 60 * 60 * 1000, // 1hr
+    maxAge: 2 * 60 * 1000, // 2 mins. Must keep low because user's permissions can change.
   }),
   httpLib = request,
   shouldLocalAuth,
@@ -116,14 +116,23 @@ export default function createAuthMiddleWare({
       }
     }
 
-    req.user = {
-      name: userName,
-      namespaces: await getNamespaces({
+    // Get the namespaces for the user.
+    // We cache the promise to prevent starting the same request multiple times.
+    let nsPromise = cache.get(`namespaces_${iamToken}`);
+    if (!nsPromise) {
+      nsPromise = getNamespaces({
         // cookies field doesn't exist on test case requests
         iamToken,
         user: userName,
-      }),
+      });
+      cache.set(`namespaces_${iamToken}`, nsPromise);
+    }
+
+    req.user = {
+      namespaces: await nsPromise,
+      iamToken,
     };
+
     next();
   });
 }

@@ -270,7 +270,7 @@ describe('Policy Resolver', () => {
       .send({
         query: `
         {
-          clustersInPolicy(policy: "policy-role") {
+          clustersInPolicy(policy: "policy-namespace", hubNamespace: "mcm") {
             name
             metadata {
               labels
@@ -303,7 +303,7 @@ describe('Policy Resolver', () => {
       .send({
         query: `
         {
-          violationsInPolicy(policy: "policy-role") {
+          violationsInPolicy(policy: "policy-namespace", namespace: "mcm") {
             cluster
             message
             name

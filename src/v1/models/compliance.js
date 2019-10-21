@@ -489,7 +489,7 @@ export default class ComplianceModel {
     return [];
   }
 
-  async getAllClustersInPolicy(policyName) {
+  async getAllClustersInPolicy(policyName, hubNamespace) {
     // if policy name specified
     const response = await this.kubeConnector.resourceViewQuery('policies.policy.mcm.ibm.com');
     const results = _.get(response, 'status.results');
@@ -502,7 +502,7 @@ export default class ComplianceModel {
         const policies = item.items;
         // eslint-disable-next-line
         policies.forEach((policy) => {
-          if (_.get(policy, 'metadata.name') === policyName && _.get(policy, 'metadata.namespace') === cluster) {
+          if (_.get(policy, 'metadata.name') === `${hubNamespace}.${policyName}` && _.get(policy, 'metadata.namespace') === cluster) {
             if (_.get(policy, 'status.compliant', '').toLowerCase() === 'compliant') {
               result.push({ name: cluster, status: 'compliant' });
             } else {
@@ -536,7 +536,7 @@ export default class ComplianceModel {
     return [];
   }
 
-  async getAllViolationsInPolicy(policyName) {
+  async getAllViolationsInPolicy(policyName, hubNamespace) {
     const resultsWithPolicyName = [];
     if (policyName === null) {
       return resultsWithPolicyName;
@@ -546,7 +546,7 @@ export default class ComplianceModel {
     _.forIn(clusterResults, (value, key) => {
       const paresdValues = _.get(value, 'items');
       paresdValues.forEach((val) => {
-        if (val.metadata.name === policyName) {
+        if (val.metadata.name === `${hubNamespace}.${policyName}`) {
           const resultInOneCluster = ComplianceModel.resolvePolicyViolations(val, key);
           if (resultInOneCluster[0].status === 'NonCompliant') {
             resultInOneCluster[0].cluster = key;

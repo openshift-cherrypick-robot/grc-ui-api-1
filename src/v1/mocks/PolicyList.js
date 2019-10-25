@@ -1012,6 +1012,195 @@ export const mockClusterListResponse = {
   },
 };
 
+export const mockCluster1ListResponse = {
+  kind: 'ClusterStatusList',
+  apiVersion: 'mcm.ibm.com/v1alpha1',
+  metadata: {
+    selfLink: '/apis/mcm.ibm.com/v1alpha1/namespaces/cluster1/clusterstatuses',
+    resourceVersion: '161225'
+  },
+  items: [
+    {
+      metadata: {
+        name: 'cluster1',
+        namespace: 'cluster1',
+        selfLink: '/apis/mcm.ibm.com/v1alpha1/namespaces/cluster1/clusterstatuses/cluster1',
+        uid: 'c0eb1c8b-e482-11e9-aa00-96bb9600cc18',
+        resourceVersion: '161218',
+        creationTimestamp: '2019-10-01T19:36:24Z',
+        labels: {
+          cluster1: 'cluster1',
+          environment: 'Dev',
+          name: 'cluster1',
+          region: 'US'
+        },
+        annotations: {
+          'mcm.ibm.com/deployer-prefix': 'md',
+          'mcm.ibm.com/secretRef': 'cluster1-federation-secret',
+          'mcm.ibm.com/user-group': 'aGNtOmNsdXN0ZXJzLHN5c3RlbTphdXRoZW50aWNhdGVk',
+          'mcm.ibm.com/user-identity': 'aGNtOmNsdXN0ZXJzOmNsdXN0ZXIxOmNsdXN0ZXIx'
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'mcm.ibm.com/__internal',
+            kind: 'Cluster',
+            name: 'cluster1',
+            uid: '6120d6bb-e482-11e9-aa00-96bb9600cc18',
+            controller: true,
+            blockOwnerDeletion: true
+          }
+        ]
+      },
+      spec: {
+        masterAddresses: [
+          {
+            ip: '9.42.82.160'
+          }
+        ],
+        consoleURL: 'https://9.42.82.160:8443',
+        capacity: {
+          cpu: '32',
+          memory: '64186Mi',
+          nodes: '4',
+          storage: '90Gi'
+        },
+        usage: {
+          cpu: '14313m',
+          memory: '39772Mi',
+          pods: '160',
+          storage: '90Gi'
+        },
+        klusterletEndpoint: {
+          ip: '9.42.82.160',
+          hostname: 'cluster1.klusterlet.mcm'
+        },
+        klusterletPort: {
+          name: 'https',
+          port: 443,
+          protocol: 'TCP'
+        },
+        monitoringScrapeTarget: 'kubernetes-cadvisor',
+        klusterletVersion: '3.2.1',
+        version: 'v1.13.9+icp-ee',
+        klusterletCA: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZwekNDQTQrZ0F3SUJBZ0lVSEIrQWdjaGZUS1RBeU1FR2x4TkdHcEhDVnowd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1l6RUxNQWtHQTFVRUJoTUNWVk14RVRBUEJnTlZCQWdNQ0U1bGR5QlpiM0pyTVE4d0RRWURWUVFIREFaQgpjbTF2Ym1zeEdqQVlCZ05WQkFvTUVVbENUU0JEYkc5MVpDQlFjbWwyWVhSbE1SUXdFZ1lEVlFRRERBdDNkM2N1CmFXSnRMbU52YlRBZUZ3MHhPVEV3TURFeE9ERTVNemRhRncweU9UQTVNamd4T0RFNU16ZGFNR014Q3pBSkJnTlYKQkFZVEFsVlRNUkV3RHdZRFZRUUlEQWhPWlhjZ1dXOXlhekVQTUEwR0ExVUVCd3dHUVhKdGIyNXJNUm93R0FZRApWUVFLREJGSlFrMGdRMnh2ZFdRZ1VISnBkbUYwWlRFVU1CSUdBMVVFQXd3TGQzZDNMbWxpYlM1amIyMHdnZ0lpCk1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQ0R3QXdnZ0lLQW9JQ0FRRGNZZFRSY2NDM1VPY2p0ejBac0Q1dkZHWW0KQlpUa09UR0dsclNrWnB1d2pQREl1TzhLbkJxZXJmQnhNUFFxeGsvM3ErNUtVM0QzSkFNUUtqekZWM2xaMW9SZApySi9qQ1FPMFZFV3lVVVVnTm5oTzhPUGJ3bFRkRTUzenlQWmhJSGdPYkhmbW02RUh1NnRNNm1QQnJjaGxzRFNjCjByMTZ2OGhGaVZ5Mmg4K1FIc2hZREhoaHl1N3RleFpnREZLWG9DcHl4MmcweTJqc2FDTVNQRzFTNSt5aGMvRW8KendGWHhTN0Nvd0xrRzRoV3RuYnk2K3QwU2JLMGN5NGd2amtpWVVybXpZT0VLWU8xR3FMUEozTzNhOWJuSXNNSApqQTMrNVl1UWRseThiNkxndE1IVW8zMmc4NWtxVk9GZkNKbDY5UnppTElMaXJuczRlakloT1BWK2tTOU0zM3dkCndPR2l3WmhUVnFsbzV4a0hmNHhDNUxkdlRSSng1bW94bzROMmRmWlNSSmRFcTZ3bGs3enR5ZERneTRtaFQxK2YKVXEzcXhqTmh3VVo4MFRhUmlpNlBCRXFEbUZSQ0QvKzJ2R1Nobm9xbXpwb0lPd2p4N05wZTBSNlpTYkxKdU5hWgpNSGMzUGVOVENqR0JPREdOS3ZHcUQ1bVRNclF3bU5XREhaZzhhV3hldGdhUXNKNmgzUnFQdTY0N1dGM25DZkVQCkVrejBwN1MxTjdiSWV3UmFvOUdDRlJ5aW9oNE5YS0R3ZzFtMzZObFdpeXl4L1Y0UmJsNFA1SEZMR1JNSzRBMUEKS2VSQUdkY1lLaFE5eThSTFdheU1lZmQ2clBQSjZ2UWprdmU0Z0ZkbkNoalhURmV2QkxiTmplZHZsUkxZQXBoUQpZS1JXWURZS1hCYURYM1VONHdJREFRQUJvMU13VVRBZEJnTlZIUTRFRmdRVUdSQ1AvVXN1SVp0VEQ1a3RmUkNCCmk3YkRocFF3SHdZRFZSMGpCQmd3Rm9BVUdSQ1AvVXN1SVp0VEQ1a3RmUkNCaTdiRGhwUXdEd1lEVlIwVEFRSC8KQkFVd0F3RUIvekFOQmdrcWhraUc5dzBCQVFzRkFBT0NBZ0VBamJla0xQNUFsazBOeHJyaFI1aVdzdVd4ZGVHSgpqcHdzUWdTVnVFbFdSZFJ2ZURQOEk1a0o2YW54ekM2ZlpXbWZvOUQzeXBlVDZQV250c1VNMDhhWGoxZXJ5azhJCjd4SFYrZnc2cmZmSG43VTlZRlNsaXpXRU5DNUtTY2dhZDFMZHdZanZKWkdpSnEvd0piMXZXN0VSNHJuVkp1cHcKQ1F4WjM0c2pMMEtvR3ZKeUIwTjVQV3c4VXh5SkFQTG5IQlp3Rncxdk0zbVhaeUlOYlFVanFRaFkxb2tEaXdYSAo5elVZSGNNdjYwWktBUWNHZkJkaklKTUozWWRMREVzd1hWa1VoL2YvVHJxOTBmazJNUXd1Y29qN25uNmsxV2E5ClprUEsxQjVrWmFVVllEQ1hBd1VPekp2L2dvdmplSzlWK2NuL29oaWc3QUYrQ3UxbXMwaWlzM01OTTUzU2h2b1MKUFAyNXhqREdXdTRyc2N2bGh6ejBRZlJoY1hjdW55eFNKOXdDdVpmR2ZINUlWMUtNUVlpSGtOMkpkdG82Q1VwbApLeU5jK0dSbVB5dFdpUGxudk1kZUQvc1pBRHoybENmVWplTTN6VWJ6T2pVdG1yR202Wm9BUGRjNXRhMWg1ZDA5CmVSclJtbm1UejdjUGJMM3NncDZXN3NGL2s5QkFsdkRLa0N3K2gxdW14bjVRc3ZpSW41Q1V3QlJ2N2c0dzAzbEkKRjFYOHM0bSt4TTgxMFJQK2ZwdklOYyt3TXBCZ2Z5V1IrSWU0OWR3RlRrVERFZ0NUQlRFNUlXMjdHQ3JKQ3V3aAo2OC9tN1gwbUl1UVlTLzlqODFidnd2SzF6WEdKelhOYjZ2TWRuQXNVNE9WQWpkVTVSSXlXNkowU2NqL0l4Vys4CkVmcmV3a3V1TC9jSEpyMD0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=',
+        monitoringEndpoint: {
+          ip: ''
+        },
+        monitoringPort: {
+          port: 0
+        },
+        monitoringSecretRef: {
+
+        }
+      }
+    }
+  ]
+};
+
+export const mockClusterHubListResponse = {
+  kind: 'ClusterStatusList',
+  apiVersion: 'mcm.ibm.com/v1alpha1',
+  metadata: {
+    selfLink: '/apis/mcm.ibm.com/v1alpha1/namespaces/clusterhub/clusterstatuses',
+    resourceVersion: '161241'
+  },
+  items: [
+    {
+      metadata: {
+        name: 'clusterhub',
+        namespace: 'clusterhub',
+        selfLink: '/apis/mcm.ibm.com/v1alpha1/namespaces/clusterhub/clusterstatuses/clusterhub',
+        uid: '96c98100-e482-11e9-aa00-96bb9600cc18',
+        resourceVersion: '160705',
+        creationTimestamp: '2019-10-01T19:35:13Z',
+        labels: {
+          environment: 'Dev',
+          name: 'clusterhub',
+          region: 'US'
+        },
+        annotations: {
+          'mcm.ibm.com/deployer-prefix': 'md',
+          'mcm.ibm.com/secretRef': 'clusterhub-federation-secret',
+          'mcm.ibm.com/user-group': 'aGNtOmNsdXN0ZXJzLHN5c3RlbTphdXRoZW50aWNhdGVk',
+          'mcm.ibm.com/user-identity': 'aGNtOmNsdXN0ZXJzOmNsdXN0ZXJodWI6Y2x1c3Rlcmh1Yg=='
+        },
+        ownerReferences: [
+          {
+            apiVersion: 'mcm.ibm.com/__internal',
+            kind: 'Cluster',
+            name: 'clusterhub',
+            uid: '24466f0f-e482-11e9-aa00-96bb9600cc18',
+            controller: true,
+            blockOwnerDeletion: true
+          }
+        ]
+      },
+      spec: {
+        masterAddresses: [
+          {
+            ip: '9.42.82.240'
+          }
+        ],
+        consoleURL: 'https://9.42.82.240:8443',
+        capacity: {
+          cpu: '32',
+          memory: '64186Mi',
+          nodes: '4',
+          storage: '60Gi'
+        },
+        usage: {
+          cpu: '12443m',
+          memory: '30806Mi',
+          pods: '130',
+          storage: '60Gi'
+        },
+        klusterletEndpoint: {
+          ip: '9.42.82.240',
+          hostname: 'clusterhub.klusterlet.mcm'
+        },
+        klusterletPort: {
+          name: 'https',
+          port: 443,
+          protocol: 'TCP'
+        },
+        monitoringScrapeTarget: 'kubernetes-cadvisor',
+        klusterletVersion: '3.2.1',
+        version: 'v1.13.9+icp-ee',
+        klusterletCA: 'LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUZwekNDQTQrZ0F3SUJBZ0lVSEIrQWdjaGZUS1RBeU1FR2x4TkdHcEhDVnowd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1l6RUxNQWtHQTFVRUJoTUNWVk14RVRBUEJnTlZCQWdNQ0U1bGR5QlpiM0pyTVE4d0RRWURWUVFIREFaQgpjbTF2Ym1zeEdqQVlCZ05WQkFvTUVVbENUU0JEYkc5MVpDQlFjbWwyWVhSbE1SUXdFZ1lEVlFRRERBdDNkM2N1CmFXSnRMbU52YlRBZUZ3MHhPVEV3TURFeE9ERTVNemRhRncweU9UQTVNamd4T0RFNU16ZGFNR014Q3pBSkJnTlYKQkFZVEFsVlRNUkV3RHdZRFZRUUlEQWhPWlhjZ1dXOXlhekVQTUEwR0ExVUVCd3dHUVhKdGIyNXJNUm93R0FZRApWUVFLREJGSlFrMGdRMnh2ZFdRZ1VISnBkbUYwWlRFVU1CSUdBMVVFQXd3TGQzZDNMbWxpYlM1amIyMHdnZ0lpCk1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQ0R3QXdnZ0lLQW9JQ0FRRGNZZFRSY2NDM1VPY2p0ejBac0Q1dkZHWW0KQlpUa09UR0dsclNrWnB1d2pQREl1TzhLbkJxZXJmQnhNUFFxeGsvM3ErNUtVM0QzSkFNUUtqekZWM2xaMW9SZApySi9qQ1FPMFZFV3lVVVVnTm5oTzhPUGJ3bFRkRTUzenlQWmhJSGdPYkhmbW02RUh1NnRNNm1QQnJjaGxzRFNjCjByMTZ2OGhGaVZ5Mmg4K1FIc2hZREhoaHl1N3RleFpnREZLWG9DcHl4MmcweTJqc2FDTVNQRzFTNSt5aGMvRW8KendGWHhTN0Nvd0xrRzRoV3RuYnk2K3QwU2JLMGN5NGd2amtpWVVybXpZT0VLWU8xR3FMUEozTzNhOWJuSXNNSApqQTMrNVl1UWRseThiNkxndE1IVW8zMmc4NWtxVk9GZkNKbDY5UnppTElMaXJuczRlakloT1BWK2tTOU0zM3dkCndPR2l3WmhUVnFsbzV4a0hmNHhDNUxkdlRSSng1bW94bzROMmRmWlNSSmRFcTZ3bGs3enR5ZERneTRtaFQxK2YKVXEzcXhqTmh3VVo4MFRhUmlpNlBCRXFEbUZSQ0QvKzJ2R1Nobm9xbXpwb0lPd2p4N05wZTBSNlpTYkxKdU5hWgpNSGMzUGVOVENqR0JPREdOS3ZHcUQ1bVRNclF3bU5XREhaZzhhV3hldGdhUXNKNmgzUnFQdTY0N1dGM25DZkVQCkVrejBwN1MxTjdiSWV3UmFvOUdDRlJ5aW9oNE5YS0R3ZzFtMzZObFdpeXl4L1Y0UmJsNFA1SEZMR1JNSzRBMUEKS2VSQUdkY1lLaFE5eThSTFdheU1lZmQ2clBQSjZ2UWprdmU0Z0ZkbkNoalhURmV2QkxiTmplZHZsUkxZQXBoUQpZS1JXWURZS1hCYURYM1VONHdJREFRQUJvMU13VVRBZEJnTlZIUTRFRmdRVUdSQ1AvVXN1SVp0VEQ1a3RmUkNCCmk3YkRocFF3SHdZRFZSMGpCQmd3Rm9BVUdSQ1AvVXN1SVp0VEQ1a3RmUkNCaTdiRGhwUXdEd1lEVlIwVEFRSC8KQkFVd0F3RUIvekFOQmdrcWhraUc5dzBCQVFzRkFBT0NBZ0VBamJla0xQNUFsazBOeHJyaFI1aVdzdVd4ZGVHSgpqcHdzUWdTVnVFbFdSZFJ2ZURQOEk1a0o2YW54ekM2ZlpXbWZvOUQzeXBlVDZQV250c1VNMDhhWGoxZXJ5azhJCjd4SFYrZnc2cmZmSG43VTlZRlNsaXpXRU5DNUtTY2dhZDFMZHdZanZKWkdpSnEvd0piMXZXN0VSNHJuVkp1cHcKQ1F4WjM0c2pMMEtvR3ZKeUIwTjVQV3c4VXh5SkFQTG5IQlp3Rncxdk0zbVhaeUlOYlFVanFRaFkxb2tEaXdYSAo5elVZSGNNdjYwWktBUWNHZkJkaklKTUozWWRMREVzd1hWa1VoL2YvVHJxOTBmazJNUXd1Y29qN25uNmsxV2E5ClprUEsxQjVrWmFVVllEQ1hBd1VPekp2L2dvdmplSzlWK2NuL29oaWc3QUYrQ3UxbXMwaWlzM01OTTUzU2h2b1MKUFAyNXhqREdXdTRyc2N2bGh6ejBRZlJoY1hjdW55eFNKOXdDdVpmR2ZINUlWMUtNUVlpSGtOMkpkdG82Q1VwbApLeU5jK0dSbVB5dFdpUGxudk1kZUQvc1pBRHoybENmVWplTTN6VWJ6T2pVdG1yR202Wm9BUGRjNXRhMWg1ZDA5CmVSclJtbm1UejdjUGJMM3NncDZXN3NGL2s5QkFsdkRLa0N3K2gxdW14bjVRc3ZpSW41Q1V3QlJ2N2c0dzAzbEkKRjFYOHM0bSt4TTgxMFJQK2ZwdklOYyt3TXBCZ2Z5V1IrSWU0OWR3RlRrVERFZ0NUQlRFNUlXMjdHQ3JKQ3V3aAo2OC9tN1gwbUl1UVlTLzlqODFidnd2SzF6WEdKelhOYjZ2TWRuQXNVNE9WQWpkVTVSSXlXNkowU2NqL0l4Vys4CkVmcmV3a3V1TC9jSEpyMD0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=',
+        monitoringEndpoint: {
+          ip: ''
+        },
+        monitoringPort: {
+          port: 0
+        },
+        monitoringSecretRef: {
+
+        }
+      }
+    }
+  ]
+};
+
+export const mockDefaultListResponse = {
+  kind: 'ClusterStatusList',
+  apiVersion: 'mcm.ibm.com/v1alpha1',
+  metadata: {
+    selfLink: '/apis/mcm.ibm.com/v1alpha1/namespaces/default/clusterstatuses',
+    resourceVersion: '161250'
+  },
+  items: []
+};
+
+export const mockKubeSystemListResponse = {
+  kind: 'ClusterStatusList',
+  apiVersion: 'mcm.ibm.com/v1alpha1',
+  metadata: {
+    selfLink: '/apis/mcm.ibm.com/v1alpha1/namespaces/kube-system/clusterstatuses',
+    resourceVersion: '161284'
+  },
+  items: []
+};
+
 export const mockViolationListResponse = {
   data: {
     violations: {
@@ -1450,6 +1639,23 @@ export const mockSinglePolicyResponse = {
     Compliant: 'NonCompliant',
     Valid: true,
   },
+};
+
+export const mockSingleNoPolicyResponse = {
+  kind: 'Status',
+  apiVersion: 'v1',
+  metadata: {
+
+  },
+  status: 'Failure',
+  message: 'policies.policy.mcm.ibm.com "compliance-xz" not found',
+  reason: 'NotFound',
+  details: {
+    name: 'compliance-xz',
+    group: 'policy.mcm.ibm.com',
+    kind: 'policies'
+  },
+  code: 404
 };
 
 export const mockCreatePolicy = {

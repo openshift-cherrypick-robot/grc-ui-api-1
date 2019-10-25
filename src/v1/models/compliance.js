@@ -1,7 +1,6 @@
-/* eslint-disable no-restricted-syntax */
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -139,22 +138,78 @@ export default class ComplianceModel {
   async getCompliances(name, namespace) {
     let policies = [];
 
-    if (!name) {
-      // for getting policy list
-      const policyResponse = await this.kubeConnector.get(`/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies`);
-      if (policyResponse.code || policyResponse.message) {
-        logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message}`);
-      }
-      policies = policyResponse.items || [];
-    } else {
-      // get single policy with a specific name - walkaround of no type field
-      const policyResponse = await this.kubeConnector.get(`/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies/${name}`);
-      if (policyResponse.code || policyResponse.message) {
-        logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message}`);
+    if (namespace) {
+      if (name) {
+        // get single policy with a specific name and a specific namespace
+        const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies/${name}`;
+        const policyResponse = await this.kubeConnector.get(URL);
+        if (policyResponse.code || policyResponse.message) {
+          logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
+        } else {
+          policies.push(policyResponse);
+        }
       } else {
-        policies.push(policyResponse);
+        // for getting policy list with a specific namespace
+        const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies`;
+        const policyResponse = await this.kubeConnector.get(URL);
+        if (policyResponse.code || policyResponse.message) {
+          logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
+        }
+        policies = policyResponse.items || [];
+      }
+    } else {
+      // all possible namespaces
+      const allNameSpace = this.kubeConnector.namespaces;
+      // remove cluster namespaces
+      const nsPromises = allNameSpace.map(async (ns) => {
+      // check ns one by one, if got normal response then it's cluster namespace
+        const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/${ns}`;
+        const checkClusterNameSpace = await this.kubeConnector.get(URL);
+        if (checkClusterNameSpace.code || checkClusterNameSpace.message) {
+          return ns; // non cluster namespaces
+        }
+        return null; // cluster namespaces
+      });
+
+      // here need to await all async check cluster namespace calls completed
+      let allNonClusterNameSpace = await Promise.all(nsPromises);
+      // remove cluster namespaces which already set to null
+      allNonClusterNameSpace = allNonClusterNameSpace.filter(ns => ns !== null);
+
+      if (name) {
+        // get single policy with a specific name and all non-clusters namespaces
+        const promises = allNonClusterNameSpace.map(async (ns) => {
+          const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${ns || config.get('complianceNamespace') || 'mcm'}/policies/${name}`;
+          const policyResponse = await this.kubeConnector.get(URL);
+          if (policyResponse.code || policyResponse.message) {
+            logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
+            return null;// 404 or not found
+          }
+          return policyResponse;// found policy
+        });
+        // here need to await all async calls completed then combine their results together
+        const policyResponses = await Promise.all(promises);
+        // remove no found policies
+        policies = policyResponses.filter(policyResponse => policyResponse !== null);
+      } else { // most general case for all policies
+        // for getting policy list with all non-clusters namespaces
+        const promises = allNonClusterNameSpace.map(async (ns) => {
+          const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${ns || config.get('complianceNamespace') || 'mcm'}/policies`;
+          const policyResponse = await this.kubeConnector.get(URL);
+          if (policyResponse.code || policyResponse.message) {
+            logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
+          }
+          return policyResponse.items;
+        });
+        // here need to await all async calls completed then combine their results together
+        const policyResponses = await Promise.all(promises);
+        // remove empty policies namespaces
+        policies = policyResponses.filter(policyResponse => policyResponse.length > 0);
+        // flatten 'array of array of object' to 'array of object'
+        policies = _.flatten(policies);
       }
     }
+
     return policies.map(entry => ({
       ...entry,
       raw: entry,
@@ -497,6 +552,7 @@ export default class ComplianceModel {
     if (results) {
       let result = [];
       const clusterNames = Object.keys(results);
+      // eslint-disable-next-line no-restricted-syntax
       for (const cluster of clusterNames) {
         const item = _.get(results, `${cluster}`, {});
         const policies = item.items;

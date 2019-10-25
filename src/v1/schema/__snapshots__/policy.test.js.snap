@@ -7,7 +7,24 @@ Object {
       Object {
         "apiVersion": null,
         "kind": null,
-        "metadata": null,
+        "metadata": Object {
+          "annotations": Object {
+            "mcm.ibm.com/deployer-prefix": "md",
+            "mcm.ibm.com/secretRef": "cluster1-federation-secret",
+            "mcm.ibm.com/user-group": "aGNtOmNsdXN0ZXJzLHN5c3RlbTphdXRoZW50aWNhdGVk",
+            "mcm.ibm.com/user-identity": "aGNtOmNsdXN0ZXJzOmNsdXN0ZXIxOmNsdXN0ZXIx",
+          },
+          "labels": Object {
+            "cluster1": "cluster1",
+            "environment": "Dev",
+            "name": "cluster1",
+            "region": "US",
+          },
+          "name": "cluster1",
+          "namespace": "cluster1",
+          "selfLink": "/apis/mcm.ibm.com/v1alpha1/namespaces/cluster1/clusterstatuses/cluster1",
+          "uid": "c0eb1c8b-e482-11e9-aa00-96bb9600cc18",
+        },
         "name": "cluster1",
         "policy": Object {
           "apiVersion": "policy.mcm.ibm.com/v1alpha1",
@@ -76,7 +93,9 @@ Object {
             "compliant": "NonCompliant",
           },
         },
-        "spec": null,
+        "spec": Object {
+          "consoleURL": "https://9.42.82.160:8443",
+        },
         "status": null,
         "total": "1",
         "violated": "1",
@@ -84,7 +103,23 @@ Object {
       Object {
         "apiVersion": null,
         "kind": null,
-        "metadata": null,
+        "metadata": Object {
+          "annotations": Object {
+            "mcm.ibm.com/deployer-prefix": "md",
+            "mcm.ibm.com/secretRef": "clusterhub-federation-secret",
+            "mcm.ibm.com/user-group": "aGNtOmNsdXN0ZXJzLHN5c3RlbTphdXRoZW50aWNhdGVk",
+            "mcm.ibm.com/user-identity": "aGNtOmNsdXN0ZXJzOmNsdXN0ZXJodWI6Y2x1c3Rlcmh1Yg==",
+          },
+          "labels": Object {
+            "environment": "Dev",
+            "name": "clusterhub",
+            "region": "US",
+          },
+          "name": "clusterhub",
+          "namespace": "clusterhub",
+          "selfLink": "/apis/mcm.ibm.com/v1alpha1/namespaces/clusterhub/clusterstatuses/clusterhub",
+          "uid": "96c98100-e482-11e9-aa00-96bb9600cc18",
+        },
         "name": "clusterhub",
         "policy": Object {
           "apiVersion": "policy.mcm.ibm.com/v1alpha1",
@@ -164,7 +199,9 @@ Object {
             "compliant": "NonCompliant",
           },
         },
-        "spec": null,
+        "spec": Object {
+          "consoleURL": "https://9.42.82.240:8443",
+        },
         "status": null,
         "total": "1",
         "violated": "1",

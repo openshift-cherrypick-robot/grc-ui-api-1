@@ -1,6 +1,6 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -10,46 +10,84 @@
 import supertest from 'supertest';
 import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
-import { mockComplianceListResponse, mockCreateCompliance } from '../mocks/ComplianceList';
-import { mockPlacementBindingResponse, mockPlacementPolicyResponse, mockSinglePolicyResponse } from '../mocks/PolicyList';
-
+import { mockComplianceListMCMResponse, mockComplianceListDefaultResponse, mockComplianceListKubeSystemResponse, mockCreateCompliance } from '../mocks/ComplianceList';
+import { mockPlacementBindingResponse, mockPlacementPolicyResponse, mockSinglePolicyResponse, mockSingleNoPolicyResponse } from '../mocks/PolicyList';
+import { mockCluster1Response, mockClusterHubResponse, mockMCMResponse, mockDefaultResponse, mockKubeSystemResponse } from '../mocks/ClusterList';
 
 describe('Compliance Resolver', () => {
   beforeAll(() => {
     // specify the url to be intercepted
     const APIServer = nock('http://0.0.0.0/kubernetes/apis');
 
-
     // Compliance / Policy list
     // define the method to be intercepted
-    APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
-      .reply(200, mockComplianceListResponse);
-
+    APIServer.persist().get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+      .reply(200, mockComplianceListMCMResponse);
+    APIServer.persist().get('/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies')
+      .reply(200, mockComplianceListDefaultResponse);
+    APIServer.persist().get('/policy.mcm.ibm.com/v1alpha1/namespaces/kube-system/policies')
+      .reply(200, mockComplianceListKubeSystemResponse);
 
     // Single compliance / policy
-    APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/compliances/compliance-xz')
+    APIServer.persist().get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/compliances/compliance-xz')
       .reply(200, mockCreateCompliance);
-    APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies/compliance-xz')
+    APIServer.persist().get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies/compliance-xz')
       .reply(200, mockSinglePolicyResponse);
-
+    APIServer.persist().get('/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies/compliance-xz')
+      .reply(200, mockSinglePolicyResponse);
+    APIServer.persist().get('/policy.mcm.ibm.com/v1alpha1/namespaces/kube-system/policies/compliance-xz')
+      .reply(200, mockSingleNoPolicyResponse);
 
     // Placement bindings
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/placementbindings')
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/mcm/placementbindings')
       .reply(200, mockPlacementBindingResponse);
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/placementbindings')
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/cluster1/placementbindings')
       .reply(200, mockPlacementBindingResponse);
-
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/clusterhub/placementbindings')
+      .reply(200, mockPlacementBindingResponse);
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/placementbindings')
+      .reply(200, mockPlacementBindingResponse);
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/default/placementbindings')
+      .reply(200, mockPlacementBindingResponse);
 
     // Placement policies
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/placementpolicies')
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/mcm/placementpolicies')
       .reply(200, mockPlacementPolicyResponse);
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/placementpolicies')
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/cluster1/placementpolicies')
       .reply(200, mockPlacementPolicyResponse);
-
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/clusterhub/placementpolicies')
+      .reply(200, mockPlacementPolicyResponse);
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/placementpolicies')
+      .reply(200, mockPlacementPolicyResponse);
+    APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/default/placementpolicies')
+      .reply(200, mockPlacementPolicyResponse);
 
     // Create compliance
     APIServer.post('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/compliances')
       .reply(200, mockCreateCompliance);
+
+    // Single cluster
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/cluster1/clusters/cluster1')
+      .reply(200, mockCluster1Response);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/clusterhub')
+      .reply(200, mockClusterHubResponse);
+    // No cluster
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/mcm')
+      .reply(200, mockMCMResponse);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/default')
+      .reply(200, mockDefaultResponse);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/mcm')
+      .reply(200, mockMCMResponse);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters/kube-system')
+      .reply(200, mockKubeSystemResponse);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/cluster1')
+      .reply(200, mockDefaultResponse);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters/cluster1')
+      .reply(200, mockKubeSystemResponse);
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/cluster1')
+      .reply(200, mockMCMResponse);
+    APIServer.persist().get('clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/cluster1')
+      .reply(200, mockDefaultResponse);
   });
 
   test('Correctly Resolves Compliance List Query', (done) => {
@@ -94,6 +132,48 @@ describe('Compliance Resolver', () => {
       });
   });
 
+  test('Correctly Resolves Compliance List Query with specific namespace', (done) => {
+    supertest(server)
+      .post(GRAPHQL_PATH)
+      .send({
+        query: `
+        {
+          compliances(name:null,namespace:"default") {
+            metadata {
+              name
+              namespace
+              selfLink
+              annotations
+              resourceVersion
+            }
+            name
+            namespace
+            raw
+            remediation
+            policyCompliant
+            clusterCompliant
+            placementPolicies {
+              metadata {
+                name
+                selfLink
+              }
+            }
+            placementBindings {
+              metadata {
+                name
+                selfLink
+              }
+            }
+          }
+        }
+      `,
+      })
+      .end((err, res) => {
+        expect(JSON.parse(res.text)).toMatchSnapshot();
+        done();
+      });
+  });
+
   test('Correctly Resolves Single Compliance Query', (done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
@@ -101,6 +181,175 @@ describe('Compliance Resolver', () => {
         query: `
         {
           compliances(name:"compliance-xz",namespace:"mcm") {
+            raw
+            metadata {
+              creationTimestamp
+              name
+              namespace
+              resourceVersion
+              selfLink
+              uid
+            }
+            placementBindings {
+              metadata {
+                name
+                namespace
+                creationTimestamp
+                selfLink
+              }
+              placementRef {
+                name
+                kind
+              }
+              subjects {
+                name
+                kind
+              }
+            }
+            placementPolicies {
+              metadata {
+                annotations
+                name
+                namespace
+                creationTimestamp
+                selfLink
+              }
+              clusterLabels
+              clusterReplicas
+              resourceSelector
+              status
+              raw
+            }
+            complianceStatus {
+              clusterNamespace
+              localCompliantStatus
+              localValidStatus
+            }
+            compliancePolicy {
+              name
+              status
+              complianceName
+              complianceNamespace
+              complianceSelfLink
+              roleTemplates {
+                apiVersion
+                complianceType
+                compliant
+                lastTransition
+                name
+                kind
+                validity
+                raw
+              }
+              roleBindingTemplates {
+                apiVersion
+                complianceType
+                compliant
+                lastTransition
+                name
+                kind
+                validity
+                raw
+              }
+              objectTemplates {
+                apiVersion
+                complianceType
+                compliant
+                lastTransition
+                name
+                kind
+                validity
+                raw
+              }
+              detail
+              raw
+            }
+            compliancePolicies {
+              name
+              clusterCompliant
+              clusterNotCompliant
+              complianceName
+              complianceNamespace
+              policies {
+                name
+                cluster
+                compliant
+                complianceName
+                complianceNamespace
+                valid
+                enforcement
+                status
+                raw
+                metadata {
+                  annotations
+                  creationTimestamp
+                  name
+                  resourceVersion
+                  selfLink
+                  uid
+                }
+                roleTemplates {
+                  name
+                  lastTransition
+                  complianceType
+                  apiVersion
+                  compliant
+                  raw
+                }
+                roleBindingTemplates {
+                  name
+                  lastTransition
+                  complianceType
+                  apiVersion
+                  compliant
+                  raw
+                }
+                objectTemplates {
+                  name
+                  lastTransition
+                  complianceType
+                  apiVersion
+                  compliant
+                  kind
+                  raw
+                }
+                rules {
+                  complianceType
+                  templateType
+                  ruleUID
+                  apiGroups
+                  verbs
+                  resources
+                }
+                violations {
+                  name
+                  cluster
+                  status
+                  message
+                  reason
+                  selector
+                }
+              }
+            }
+            policyCompliant
+            clusterCompliant
+          }
+        }
+      `,
+      })
+      .end((err, res) => {
+        expect(JSON.parse(res.text)).toMatchSnapshot();
+        done();
+      });
+  });
+
+  test('Correctly Resolves Single Compliance Query without namespace', (done) => {
+    supertest(server)
+      .post(GRAPHQL_PATH)
+      .send({
+        query: `
+        {
+          compliances(name:"compliance-xz") {
             raw
             metadata {
               creationTimestamp

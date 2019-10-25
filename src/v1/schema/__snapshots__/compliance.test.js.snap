@@ -5,6 +5,17 @@ Object {
   "data": Object {
     "compliances": Array [
       Object {
+        "clusterCompliant": "0/0",
+        "metadata": null,
+        "name": "",
+        "namespace": "",
+        "placementBindings": Array [],
+        "placementPolicies": Array [],
+        "policyCompliant": "0/0",
+        "raw": "Just default it!",
+        "remediation": "",
+      },
+      Object {
         "clusterCompliant": "0/2",
         "metadata": Object {
           "annotations": Object {
@@ -889,6 +900,26 @@ Object {
 }
 `;
 
+exports[`Compliance Resolver Correctly Resolves Compliance List Query with specific namespace 1`] = `
+Object {
+  "data": Object {
+    "compliances": Array [
+      Object {
+        "clusterCompliant": "0/0",
+        "metadata": null,
+        "name": "",
+        "namespace": "",
+        "placementBindings": Array [],
+        "placementPolicies": Array [],
+        "policyCompliant": "0/0",
+        "raw": "Just default it!",
+        "remediation": "",
+      },
+    ],
+  },
+}
+`;
+
 exports[`Compliance Resolver Correctly Resolves Create Compliance Mutation 1`] = `
 Object {
   "data": Object {
@@ -1065,6 +1096,807 @@ exports[`Compliance Resolver Correctly Resolves Single Compliance Query 1`] = `
 Object {
   "data": Object {
     "compliances": Array [
+      Object {
+        "clusterCompliant": "0/0",
+        "compliancePolicies": Array [],
+        "compliancePolicy": Array [
+          Object {
+            "complianceName": "policy-xz-1",
+            "complianceNamespace": "mycluster",
+            "complianceSelfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+            "detail": Object {
+              "exclude_namespace": Array [
+                "kube*",
+              ],
+              "include_namespace": Array [
+                "default",
+              ],
+            },
+            "name": "policy-xz-1",
+            "objectTemplates": Array [],
+            "raw": Object {
+              "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusters": Array [],
+              "kind": "Policy",
+              "metadata": Object {
+                "creationTimestamp": "2018-09-04T16:13:50Z",
+                "finalizers": Array [
+                  "finalizer.mcm.ibm.com",
+                ],
+                "generation": 1,
+                "labels": Object {
+                  "compliance": "compliance-xz",
+                },
+                "name": "policy-xz-1",
+                "namespace": "mycluster",
+                "ownerReferences": Array [
+                  Object {
+                    "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "Compliance",
+                    "name": "compliance-xz",
+                    "uid": "82de70e7-b05d-11e8-9a12-005056a0d11b",
+                  },
+                ],
+                "resourceVersion": "4349995",
+                "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+                "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+              },
+              "name": "policy-xz-1",
+              "namespace": "mycluster",
+              "raw": Object {
+                "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+                "kind": "Policy",
+                "metadata": Object {
+                  "creationTimestamp": "2018-09-04T16:13:50Z",
+                  "finalizers": Array [
+                    "finalizer.mcm.ibm.com",
+                  ],
+                  "generation": 1,
+                  "labels": Object {
+                    "compliance": "compliance-xz",
+                  },
+                  "name": "policy-xz-1",
+                  "namespace": "mycluster",
+                  "ownerReferences": Array [
+                    Object {
+                      "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
+                      "blockOwnerDeletion": true,
+                      "controller": true,
+                      "kind": "Compliance",
+                      "name": "compliance-xz",
+                      "uid": "82de70e7-b05d-11e8-9a12-005056a0d11b",
+                    },
+                  ],
+                  "resourceVersion": "4349995",
+                  "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+                  "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+                },
+                "spec": Object {
+                  "complianceType": "",
+                  "namespaces": Object {
+                    "exclude": Array [
+                      "kube*",
+                    ],
+                    "include": Array [
+                      "default",
+                    ],
+                  },
+                  "remediationAction": "inform",
+                  "role-templates": Array [
+                    Object {
+                      "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                      "complianceType": "musthave",
+                      "kind": "RoleTemplate",
+                      "metadata": Object {
+                        "creationTimestamp": null,
+                        "name": "role-xz-1",
+                      },
+                      "rules": Array [
+                        Object {
+                          "complianceType": "musthave",
+                          "policyRule": Object {
+                            "apiGroups": Array [
+                              "extensions",
+                              "apps",
+                            ],
+                            "resources": Array [
+                              "deployments",
+                            ],
+                            "verbs": Array [
+                              "get",
+                              "list",
+                              "watch",
+                              "create",
+                              "delete",
+                              "patch",
+                            ],
+                          },
+                        },
+                      ],
+                      "selector": Object {
+                        "matchLabels": Object {
+                          "cloud": "IBM",
+                        },
+                      },
+                      "status": Object {
+                        "Compliant": "NonCompliant",
+                        "Validity": Object {
+                          "valid": true,
+                        },
+                        "conditions": Array [
+                          Object {
+                            "lastTransitionTime": "2018-09-06T15:14:44Z",
+                            "message": "k8s RBAC role is missing: role-xz-1",
+                            "reason": "K8s RBAC role is missing",
+                            "status": "True",
+                            "type": "completed",
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+                "status": Object {
+                  "Compliant": "NonCompliant",
+                  "Valid": true,
+                },
+              },
+              "remediation": "inform",
+              "spec": Object {
+                "complianceType": "",
+                "namespaces": Object {
+                  "exclude": Array [
+                    "kube*",
+                  ],
+                  "include": Array [
+                    "default",
+                  ],
+                },
+                "remediationAction": "inform",
+                "role-templates": Array [
+                  Object {
+                    "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                    "complianceType": "musthave",
+                    "kind": "RoleTemplate",
+                    "metadata": Object {
+                      "creationTimestamp": null,
+                      "name": "role-xz-1",
+                    },
+                    "rules": Array [
+                      Object {
+                        "complianceType": "musthave",
+                        "policyRule": Object {
+                          "apiGroups": Array [
+                            "extensions",
+                            "apps",
+                          ],
+                          "resources": Array [
+                            "deployments",
+                          ],
+                          "verbs": Array [
+                            "get",
+                            "list",
+                            "watch",
+                            "create",
+                            "delete",
+                            "patch",
+                          ],
+                        },
+                      },
+                    ],
+                    "selector": Object {
+                      "matchLabels": Object {
+                        "cloud": "IBM",
+                      },
+                    },
+                    "status": Object {
+                      "Compliant": "NonCompliant",
+                      "Validity": Object {
+                        "valid": true,
+                      },
+                      "conditions": Array [
+                        Object {
+                          "lastTransitionTime": "2018-09-06T15:14:44Z",
+                          "message": "k8s RBAC role is missing: role-xz-1",
+                          "reason": "K8s RBAC role is missing",
+                          "status": "True",
+                          "type": "completed",
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+              "status": Object {
+                "Compliant": "NonCompliant",
+                "Valid": true,
+              },
+            },
+            "roleBindingTemplates": Array [],
+            "roleTemplates": Array [
+              Object {
+                "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                "complianceType": "musthave",
+                "compliant": "NonCompliant",
+                "kind": null,
+                "lastTransition": "2018-09-06T15:14:44Z",
+                "name": "role-xz-1",
+                "raw": Object {
+                  "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                  "complianceType": "musthave",
+                  "kind": "RoleTemplate",
+                  "metadata": Object {
+                    "creationTimestamp": null,
+                    "name": "role-xz-1",
+                  },
+                  "rules": Array [
+                    Object {
+                      "complianceType": "musthave",
+                      "policyRule": Object {
+                        "apiGroups": Array [
+                          "extensions",
+                          "apps",
+                        ],
+                        "resources": Array [
+                          "deployments",
+                        ],
+                        "verbs": Array [
+                          "get",
+                          "list",
+                          "watch",
+                          "create",
+                          "delete",
+                          "patch",
+                        ],
+                      },
+                    },
+                  ],
+                  "selector": Object {
+                    "matchLabels": Object {
+                      "cloud": "IBM",
+                    },
+                  },
+                  "status": Object {
+                    "Compliant": "NonCompliant",
+                    "Validity": Object {
+                      "valid": true,
+                    },
+                    "conditions": Array [
+                      Object {
+                        "lastTransitionTime": "2018-09-06T15:14:44Z",
+                        "message": "k8s RBAC role is missing: role-xz-1",
+                        "reason": "K8s RBAC role is missing",
+                        "status": "True",
+                        "type": "completed",
+                      },
+                    ],
+                  },
+                  "templateType": "role-templates",
+                },
+                "validity": "true",
+              },
+            ],
+            "status": null,
+          },
+        ],
+        "complianceStatus": Array [],
+        "metadata": Object {
+          "creationTimestamp": "2018-09-04T16:13:50Z",
+          "name": "policy-xz-1",
+          "namespace": "mycluster",
+          "resourceVersion": "4349995",
+          "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+          "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+        },
+        "placementBindings": Array [],
+        "placementPolicies": Array [],
+        "policyCompliant": "0/0",
+        "raw": Object {
+          "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+          "kind": "Policy",
+          "metadata": Object {
+            "creationTimestamp": "2018-09-04T16:13:50Z",
+            "finalizers": Array [
+              "finalizer.mcm.ibm.com",
+            ],
+            "generation": 1,
+            "labels": Object {
+              "compliance": "compliance-xz",
+            },
+            "name": "policy-xz-1",
+            "namespace": "mycluster",
+            "ownerReferences": Array [
+              Object {
+                "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "Compliance",
+                "name": "compliance-xz",
+                "uid": "82de70e7-b05d-11e8-9a12-005056a0d11b",
+              },
+            ],
+            "resourceVersion": "4349995",
+            "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+            "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+          },
+          "spec": Object {
+            "complianceType": "",
+            "namespaces": Object {
+              "exclude": Array [
+                "kube*",
+              ],
+              "include": Array [
+                "default",
+              ],
+            },
+            "remediationAction": "inform",
+            "role-templates": Array [
+              Object {
+                "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                "complianceType": "musthave",
+                "kind": "RoleTemplate",
+                "metadata": Object {
+                  "creationTimestamp": null,
+                  "name": "role-xz-1",
+                },
+                "rules": Array [
+                  Object {
+                    "complianceType": "musthave",
+                    "policyRule": Object {
+                      "apiGroups": Array [
+                        "extensions",
+                        "apps",
+                      ],
+                      "resources": Array [
+                        "deployments",
+                      ],
+                      "verbs": Array [
+                        "get",
+                        "list",
+                        "watch",
+                        "create",
+                        "delete",
+                        "patch",
+                      ],
+                    },
+                  },
+                ],
+                "selector": Object {
+                  "matchLabels": Object {
+                    "cloud": "IBM",
+                  },
+                },
+                "status": Object {
+                  "Compliant": "NonCompliant",
+                  "Validity": Object {
+                    "valid": true,
+                  },
+                  "conditions": Array [
+                    Object {
+                      "lastTransitionTime": "2018-09-06T15:14:44Z",
+                      "message": "k8s RBAC role is missing: role-xz-1",
+                      "reason": "K8s RBAC role is missing",
+                      "status": "True",
+                      "type": "completed",
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          "status": Object {
+            "Compliant": "NonCompliant",
+            "Valid": true,
+          },
+        },
+      },
+    ],
+  },
+}
+`;
+
+exports[`Compliance Resolver Correctly Resolves Single Compliance Query without namespace 1`] = `
+Object {
+  "data": Object {
+    "compliances": Array [
+      Object {
+        "clusterCompliant": "0/0",
+        "compliancePolicies": Array [],
+        "compliancePolicy": Array [
+          Object {
+            "complianceName": "policy-xz-1",
+            "complianceNamespace": "mycluster",
+            "complianceSelfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+            "detail": Object {
+              "exclude_namespace": Array [
+                "kube*",
+              ],
+              "include_namespace": Array [
+                "default",
+              ],
+            },
+            "name": "policy-xz-1",
+            "objectTemplates": Array [],
+            "raw": Object {
+              "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusters": Array [],
+              "kind": "Policy",
+              "metadata": Object {
+                "creationTimestamp": "2018-09-04T16:13:50Z",
+                "finalizers": Array [
+                  "finalizer.mcm.ibm.com",
+                ],
+                "generation": 1,
+                "labels": Object {
+                  "compliance": "compliance-xz",
+                },
+                "name": "policy-xz-1",
+                "namespace": "mycluster",
+                "ownerReferences": Array [
+                  Object {
+                    "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "Compliance",
+                    "name": "compliance-xz",
+                    "uid": "82de70e7-b05d-11e8-9a12-005056a0d11b",
+                  },
+                ],
+                "resourceVersion": "4349995",
+                "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+                "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+              },
+              "name": "policy-xz-1",
+              "namespace": "mycluster",
+              "raw": Object {
+                "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+                "kind": "Policy",
+                "metadata": Object {
+                  "creationTimestamp": "2018-09-04T16:13:50Z",
+                  "finalizers": Array [
+                    "finalizer.mcm.ibm.com",
+                  ],
+                  "generation": 1,
+                  "labels": Object {
+                    "compliance": "compliance-xz",
+                  },
+                  "name": "policy-xz-1",
+                  "namespace": "mycluster",
+                  "ownerReferences": Array [
+                    Object {
+                      "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
+                      "blockOwnerDeletion": true,
+                      "controller": true,
+                      "kind": "Compliance",
+                      "name": "compliance-xz",
+                      "uid": "82de70e7-b05d-11e8-9a12-005056a0d11b",
+                    },
+                  ],
+                  "resourceVersion": "4349995",
+                  "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+                  "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+                },
+                "spec": Object {
+                  "complianceType": "",
+                  "namespaces": Object {
+                    "exclude": Array [
+                      "kube*",
+                    ],
+                    "include": Array [
+                      "default",
+                    ],
+                  },
+                  "remediationAction": "inform",
+                  "role-templates": Array [
+                    Object {
+                      "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                      "complianceType": "musthave",
+                      "kind": "RoleTemplate",
+                      "metadata": Object {
+                        "creationTimestamp": null,
+                        "name": "role-xz-1",
+                      },
+                      "rules": Array [
+                        Object {
+                          "complianceType": "musthave",
+                          "policyRule": Object {
+                            "apiGroups": Array [
+                              "extensions",
+                              "apps",
+                            ],
+                            "resources": Array [
+                              "deployments",
+                            ],
+                            "verbs": Array [
+                              "get",
+                              "list",
+                              "watch",
+                              "create",
+                              "delete",
+                              "patch",
+                            ],
+                          },
+                        },
+                      ],
+                      "selector": Object {
+                        "matchLabels": Object {
+                          "cloud": "IBM",
+                        },
+                      },
+                      "status": Object {
+                        "Compliant": "NonCompliant",
+                        "Validity": Object {
+                          "valid": true,
+                        },
+                        "conditions": Array [
+                          Object {
+                            "lastTransitionTime": "2018-09-06T15:14:44Z",
+                            "message": "k8s RBAC role is missing: role-xz-1",
+                            "reason": "K8s RBAC role is missing",
+                            "status": "True",
+                            "type": "completed",
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+                "status": Object {
+                  "Compliant": "NonCompliant",
+                  "Valid": true,
+                },
+              },
+              "remediation": "inform",
+              "spec": Object {
+                "complianceType": "",
+                "namespaces": Object {
+                  "exclude": Array [
+                    "kube*",
+                  ],
+                  "include": Array [
+                    "default",
+                  ],
+                },
+                "remediationAction": "inform",
+                "role-templates": Array [
+                  Object {
+                    "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                    "complianceType": "musthave",
+                    "kind": "RoleTemplate",
+                    "metadata": Object {
+                      "creationTimestamp": null,
+                      "name": "role-xz-1",
+                    },
+                    "rules": Array [
+                      Object {
+                        "complianceType": "musthave",
+                        "policyRule": Object {
+                          "apiGroups": Array [
+                            "extensions",
+                            "apps",
+                          ],
+                          "resources": Array [
+                            "deployments",
+                          ],
+                          "verbs": Array [
+                            "get",
+                            "list",
+                            "watch",
+                            "create",
+                            "delete",
+                            "patch",
+                          ],
+                        },
+                      },
+                    ],
+                    "selector": Object {
+                      "matchLabels": Object {
+                        "cloud": "IBM",
+                      },
+                    },
+                    "status": Object {
+                      "Compliant": "NonCompliant",
+                      "Validity": Object {
+                        "valid": true,
+                      },
+                      "conditions": Array [
+                        Object {
+                          "lastTransitionTime": "2018-09-06T15:14:44Z",
+                          "message": "k8s RBAC role is missing: role-xz-1",
+                          "reason": "K8s RBAC role is missing",
+                          "status": "True",
+                          "type": "completed",
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+              "status": Object {
+                "Compliant": "NonCompliant",
+                "Valid": true,
+              },
+            },
+            "roleBindingTemplates": Array [],
+            "roleTemplates": Array [
+              Object {
+                "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                "complianceType": "musthave",
+                "compliant": "NonCompliant",
+                "kind": null,
+                "lastTransition": "2018-09-06T15:14:44Z",
+                "name": "role-xz-1",
+                "raw": Object {
+                  "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                  "complianceType": "musthave",
+                  "kind": "RoleTemplate",
+                  "metadata": Object {
+                    "creationTimestamp": null,
+                    "name": "role-xz-1",
+                  },
+                  "rules": Array [
+                    Object {
+                      "complianceType": "musthave",
+                      "policyRule": Object {
+                        "apiGroups": Array [
+                          "extensions",
+                          "apps",
+                        ],
+                        "resources": Array [
+                          "deployments",
+                        ],
+                        "verbs": Array [
+                          "get",
+                          "list",
+                          "watch",
+                          "create",
+                          "delete",
+                          "patch",
+                        ],
+                      },
+                    },
+                  ],
+                  "selector": Object {
+                    "matchLabels": Object {
+                      "cloud": "IBM",
+                    },
+                  },
+                  "status": Object {
+                    "Compliant": "NonCompliant",
+                    "Validity": Object {
+                      "valid": true,
+                    },
+                    "conditions": Array [
+                      Object {
+                        "lastTransitionTime": "2018-09-06T15:14:44Z",
+                        "message": "k8s RBAC role is missing: role-xz-1",
+                        "reason": "K8s RBAC role is missing",
+                        "status": "True",
+                        "type": "completed",
+                      },
+                    ],
+                  },
+                  "templateType": "role-templates",
+                },
+                "validity": "true",
+              },
+            ],
+            "status": null,
+          },
+        ],
+        "complianceStatus": Array [],
+        "metadata": Object {
+          "creationTimestamp": "2018-09-04T16:13:50Z",
+          "name": "policy-xz-1",
+          "namespace": "mycluster",
+          "resourceVersion": "4349995",
+          "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+          "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+        },
+        "placementBindings": Array [],
+        "placementPolicies": Array [],
+        "policyCompliant": "0/0",
+        "raw": Object {
+          "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+          "kind": "Policy",
+          "metadata": Object {
+            "creationTimestamp": "2018-09-04T16:13:50Z",
+            "finalizers": Array [
+              "finalizer.mcm.ibm.com",
+            ],
+            "generation": 1,
+            "labels": Object {
+              "compliance": "compliance-xz",
+            },
+            "name": "policy-xz-1",
+            "namespace": "mycluster",
+            "ownerReferences": Array [
+              Object {
+                "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "Compliance",
+                "name": "compliance-xz",
+                "uid": "82de70e7-b05d-11e8-9a12-005056a0d11b",
+              },
+            ],
+            "resourceVersion": "4349995",
+            "selfLink": "/apis/policy.mcm.ibm.com/v1alpha1/namespaces/mycluster/policies/policy-xz-1",
+            "uid": "82e00acc-b05d-11e8-9a12-005056a0d11b",
+          },
+          "spec": Object {
+            "complianceType": "",
+            "namespaces": Object {
+              "exclude": Array [
+                "kube*",
+              ],
+              "include": Array [
+                "default",
+              ],
+            },
+            "remediationAction": "inform",
+            "role-templates": Array [
+              Object {
+                "apiVersion": "roletemplate.mcm.ibm.com/v1alpha1",
+                "complianceType": "musthave",
+                "kind": "RoleTemplate",
+                "metadata": Object {
+                  "creationTimestamp": null,
+                  "name": "role-xz-1",
+                },
+                "rules": Array [
+                  Object {
+                    "complianceType": "musthave",
+                    "policyRule": Object {
+                      "apiGroups": Array [
+                        "extensions",
+                        "apps",
+                      ],
+                      "resources": Array [
+                        "deployments",
+                      ],
+                      "verbs": Array [
+                        "get",
+                        "list",
+                        "watch",
+                        "create",
+                        "delete",
+                        "patch",
+                      ],
+                    },
+                  },
+                ],
+                "selector": Object {
+                  "matchLabels": Object {
+                    "cloud": "IBM",
+                  },
+                },
+                "status": Object {
+                  "Compliant": "NonCompliant",
+                  "Validity": Object {
+                    "valid": true,
+                  },
+                  "conditions": Array [
+                    Object {
+                      "lastTransitionTime": "2018-09-06T15:14:44Z",
+                      "message": "k8s RBAC role is missing: role-xz-1",
+                      "reason": "K8s RBAC role is missing",
+                      "status": "True",
+                      "type": "completed",
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+          "status": Object {
+            "Compliant": "NonCompliant",
+            "Valid": true,
+          },
+        },
+      },
       Object {
         "clusterCompliant": "0/0",
         "compliancePolicies": Array [],

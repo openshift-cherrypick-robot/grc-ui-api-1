@@ -12,9 +12,11 @@ import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
 import {
   mockPolicyListResponse, mockSinglePolicyResponse, mockCreatePolicy, mockDeleteResponse,
-  mockClusterListResponse, mockViolationListResponse, mockCreateResourcePost, mockCreateResourceGet,
-  mockCompletedResourceView,
+  mockClusterListResponse, mockCluster1ListResponse, mockClusterHubListResponse,
+  mockDefaultListResponse, mockKubeSystemListResponse, mockViolationListResponse,
+  mockCreateResourcePost, mockCreateResourceGet, mockCompletedResourceView,
 } from '../mocks/PolicyList';
+import { mockCluster1Response, mockClusterHubResponse, mockMCMResponse, mockDefaultResponse, mockKubeSystemResponse } from '../mocks/ClusterList';
 
 describe('Policy Resolver', () => {
   beforeAll(() => {
@@ -43,11 +45,63 @@ describe('Policy Resolver', () => {
     APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/mcm/clusterstatuses')
       .reply(200, mockClusterListResponse);
 
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/cluster1/clusterstatuses')
+      .reply(200, mockCluster1ListResponse);
+
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/clusterstatuses')
+      .reply(200, mockDefaultListResponse);
+
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/clusterstatuses')
+      .reply(200, mockKubeSystemListResponse);
+
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/clusterhub/clusterstatuses')
+      .reply(200, mockClusterHubListResponse);
+
     APIServer.post('/policies.policy.mcm.ibm.com')
       .reply(200, mockViolationListResponse);
 
     APIServer.delete('/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies/test-policy')
       .reply(200, mockDeleteResponse);
+
+    APIServer.delete('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters')
+      .reply(200, mockDefaultResponse);
+
+    APIServer.delete('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews/policies-policy-mcm-ibm-com-1563995392802')
+      .reply(200, mockDeleteResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/cluster1')
+      .reply(200, mockDefaultResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters')
+      .reply(200, mockDefaultResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters/cluster1')
+      .reply(200, mockKubeSystemResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters')
+      .reply(200, mockKubeSystemResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/cluster1')
+      .reply(200, mockMCMResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters')
+      .reply(200, mockMCMResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/cluster1')
+      .reply(200, mockDefaultResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters')
+      .reply(200, mockDefaultResponse);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/cluster1/clusters')
+      .reply(200, mockDefaultResponse);
+
+    // Single cluster
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/cluster1/clusters/cluster1')
+      .reply(200, mockCluster1Response);
+
+    APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/clusterhub')
+      .reply(200, mockClusterHubResponse);
   });
 
   test('Correctly Resolves Policy List Query', (done) => {

@@ -19,6 +19,14 @@ describe('Placement Resolver', () => {
 
     APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/placementpolicies')
       .reply(200, mockPlacementListResponse);
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/placementpolicies')
+      .reply(200, mockPlacementListResponse);
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/mcm/placementpolicies')
+      .reply(200, mockPlacementListResponse);
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/cluster1/placementpolicies')
+      .reply(200, mockPlacementListResponse);
+    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/clusterhub/placementpolicies')
+      .reply(200, mockPlacementListResponse);
   });
 
   test('Correctly Resolves Placement Policy List Query', (done) => {

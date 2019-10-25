@@ -1,13 +1,34 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+export const mockComplianceListDefaultResponse = {
+  apiVersion: 'policy.mcm.ibm.com/v1alpha1',
+  items: ['Just default it!'],
+  kind: 'PolicyList',
+  metadata: {
+    continue: '',
+    resourceVersion: '10793978',
+    selfLink: '/apis/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies',
+  },
+};
 
-export const mockComplianceListResponse = {
+export const mockComplianceListKubeSystemResponse = {
+  apiVersion: 'policy.mcm.ibm.com/v1alpha1',
+  items: [],
+  kind: 'PolicyList',
+  metadata: {
+    continue: '',
+    resourceVersion: '10794564',
+    selfLink: '/apis/policy.mcm.ibm.com/v1alpha1/namespaces/kube-system/policies',
+  },
+};
+
+export const mockComplianceListMCMResponse = {
   apiVersion: 'policy.mcm.ibm.com/v1alpha1',
   items: [
     {

@@ -6,32 +6,26 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
-import config from '../../../config';
 
 export const typeDef = `
-type Existing {
+type Discoveries {
   clusterLabels: JSON
-  compliances: [ExistingCompliance]
-  placements: [ExistingPlacements]
-}
-
-type ExistingCompliance {
-  name: String
-  namespace: String
+  policyNames: JSON
   annotations: JSON
-  spec: JSON
+  templates: [Templates]
 }
 
-type ExistingPlacements {
+type Templates {
   name: String
-  clusterLabels: JSON
+  spec: JSON
 }
 `;
 
+
 export const resolver = {
   Query: {
-    existing: async (root, args, {
-      clusterModel, complianceModel, PlacementModel,
+    discoveries: async (root, args, {
+      clusterModel, complianceModel,
     }) => {
       // existing cluster labels
       const labelMap = {};
@@ -46,35 +40,31 @@ export const resolver = {
       });
       const clusterLabels = Object.values(labelMap);
 
-      // existing compliances
-      let compliances = await complianceModel.getCompliances();
-      compliances = compliances.map(({
-        name, namespace, metadata = {}, spec = {},
+      // existing policies
+      const policyNames = [];
+      const collection = { standards: new Set(), categories: new Set(), controls: new Set() };
+      const compliances = await complianceModel.getCompliances();
+      compliances.forEach(({
+        name, metadata = {},
       }) => {
-        const { annotations = {} } = metadata;
-        return {
-          name,
-          namespace,
-          annotations,
-          spec,
-        };
+        const { annotations } = metadata;
+        policyNames.push(name);
+        Object.keys(collection).forEach((key) => {
+          const types = annotations[`policy.mcm.ibm.com/${key}`] || '';
+          types.split(',').forEach((type) => {
+            const ttype = type.trim();
+            if (ttype) {
+              collection[key].add(ttype);
+            }
+          });
+        });
       });
 
-      // existing compliance placements
-      const complianceNamespace = config.get('complianceNamespace') || 'mcm';
-      let placements = await PlacementModel.getPlacementPolicies();
-      placements = placements
-        .filter(({ metadata: { namespace } }) => namespace === complianceNamespace)
-        .map(({ clusterLabels: cl, metadata = {} }) => {
-          const { name } = metadata;
-          return {
-            name,
-            clusterLabels: cl,
-          };
-        });
+      // PolicyTemplates
+      const templates = [];
 
       return {
-        clusterLabels, compliances, placements,
+        clusterLabels, policyNames, annotations: collection, templates,
       };
     },
   },

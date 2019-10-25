@@ -13,7 +13,7 @@ type Query {
   #applications(name: String, namespace: String): [Application]
   namespaces: [Namespace]
   logs(containerName: String!, podName: String!, podNamespace: String!, clusterName: String!): String
-  existing: Existing
+  discoveries: Discoveries
 
   # Policies and Compliances
   policies(name: String, clusterName: String): [Policy]

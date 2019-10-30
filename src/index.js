@@ -9,13 +9,8 @@
 
 import https from 'https';
 import fs from 'fs';
-import log4js from 'log4js';
+import logger from './v1/lib/logger';
 import config from '../config';
-
-const logger = log4js.getLogger('server');
-
-const log4jsConfig = process.env.LOG4JS_CONFIG ? JSON.parse(process.env.LOG4JS_CONFIG) : undefined;
-log4js.configure(log4jsConfig || 'config/log4js.json');
 
 const GRAPHQL_PORT = process.env.PORT || config.get('httpPort') || 4000;
 const CONTEXT_PATH = config.get('contextPath');

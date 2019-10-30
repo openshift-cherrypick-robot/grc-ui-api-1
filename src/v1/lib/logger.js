@@ -12,6 +12,11 @@ import log4js from 'log4js';
 const logger = log4js.getLogger('server');
 
 const log4jsConfig = process.env.LOG4JS_CONFIG ? JSON.parse(process.env.LOG4JS_CONFIG) : undefined;
-log4js.configure(log4jsConfig || 'config/log4js.json');
+
+if (process.env.NODE_ENV !== 'production') {
+  log4js.configure(log4jsConfig || 'config/log4jsDev.json');
+} else {
+  log4js.configure(log4jsConfig || 'config/log4jsProduct.json');
+}
 
 export default logger;

@@ -12,11 +12,12 @@ import KubeModel from './kube';
 import config from '../../../config';
 
 export default class SAModel extends KubeModel {
-  async getOccurrences(args) {
+  async getOccurrences(userAccountID, req) {
+    const urlUserAccountID = (userAccountID && userAccountID.length > 0) ? userAccountID : config.get('defaultUserAccountID');
     const url = config.get('NODE_ENV') === 'test' ? 'http://0.0.0.0' : config.get('cfcRouterUrl');
-    const iamToken = _.get(args.req, "cookies['cfc-access-token-cookie']") || config.get('cfc-access-token-cookie');
+    const iamToken = _.get(req, "cookies['cfc-access-token-cookie']") || config.get('cfc-access-token-cookie');
     const opts = {
-      url: `${url}/findings/v1/id-mycluster-account/graph`,
+      url: `${url}/findings/v1/${urlUserAccountID}/graph`,
       headers: {
         AccessToken: iamToken,
       },

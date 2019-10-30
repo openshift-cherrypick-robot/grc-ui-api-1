@@ -24,7 +24,7 @@ type Query {
   placementPolicies (selector: JSON): [PlacementPolicy]
 
   # sa
-  occurrences: [Occurrence]
+  occurrences(userAccountID: String): [Occurrence]
 }
 
 type Mutation {

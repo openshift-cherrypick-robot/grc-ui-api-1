@@ -28,6 +28,6 @@ type Occurrence {
 export const resolver = {
   Query: {
     occurrences: (root, args, { saModel, req }) =>
-      saModel.getOccurrences({ ...args, req }),
+      saModel.getOccurrences(args.userAccountID, req),
   },
 };

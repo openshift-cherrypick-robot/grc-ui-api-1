@@ -64,7 +64,9 @@ image:: docker-logins
 
 .PHONY: run
 run: 
+ifeq ($(ARCH), x86_64)
 	make docker:run
+endif
 
 .PHONY: push
 push:
@@ -85,3 +87,9 @@ ifeq ($(ARCH), x86_64)
 	make docker:tag-arch DOCKER_TAG=$(SEMVERSION_RED_HAT)
 	make docker:push-arch DOCKER_TAG=$(SEMVERSION_RED_HAT)
 endif
+
+.PHONY: multi-arch
+multi-arch:
+	make docker:manifest-tool
+	make docker:multi-arch
+	make docker:multi-arch DOCKER_TAG=$(SEMVERSION)

@@ -67,27 +67,17 @@ describe('Compliance Resolver', () => {
       .reply(200, mockCreateCompliance);
 
     // Single cluster
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/cluster1/clusters/cluster1')
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/cluster1/clusters/')
       .reply(200, mockCluster1Response);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/clusterhub')
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/')
       .reply(200, mockClusterHubResponse);
     // No cluster
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/mcm')
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/')
       .reply(200, mockMCMResponse);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/default')
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/')
       .reply(200, mockDefaultResponse);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/mcm')
-      .reply(200, mockMCMResponse);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters/kube-system')
+    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters/')
       .reply(200, mockKubeSystemResponse);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/cluster1')
-      .reply(200, mockDefaultResponse);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/kube-system/clusters/cluster1')
-      .reply(200, mockKubeSystemResponse);
-    APIServer.persist().get('/clusterregistry.k8s.io/v1alpha1/namespaces/mcm/clusters/cluster1')
-      .reply(200, mockMCMResponse);
-    APIServer.persist().get('clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/cluster1')
-      .reply(200, mockDefaultResponse);
   });
 
   test('Correctly Resolves Compliance List Query', (done) => {

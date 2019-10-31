@@ -13,6 +13,7 @@ type Discoveries {
   policyNames: JSON
   annotations: JSON
   templates: [Templates]
+  namespaces: JSON
 }
 
 type Templates {
@@ -63,8 +64,25 @@ export const resolver = {
       // PolicyTemplates
       const templates = [];
 
+      // Namespaces
+      const allNameSpace = complianceModel.kubeConnector.namespaces;
+      const nsPromises = allNameSpace.map(async (ns) => {
+        const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/`;
+        const checkClusterNameSpace = await complianceModel.kubeConnector.get(URL);
+        if (checkClusterNameSpace.items && checkClusterNameSpace.items.length > 0) {
+          return null; // cluster namespaces
+        }
+        return ns; // non cluster namespaces
+      });
+      let allNonClusterNameSpace = await Promise.all(nsPromises);
+      allNonClusterNameSpace = allNonClusterNameSpace.filter(ns => ns !== null);
+
       return {
-        clusterLabels, policyNames, annotations: collection, templates,
+        clusterLabels,
+        policyNames,
+        annotations: collection,
+        templates,
+        namespaces: allNonClusterNameSpace,
       };
     },
   },

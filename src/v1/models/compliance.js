@@ -163,12 +163,12 @@ export default class ComplianceModel {
       // remove cluster namespaces
       const nsPromises = allNameSpace.map(async (ns) => {
       // check ns one by one, if got normal response then it's cluster namespace
-        const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/${ns}`;
+        const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/`;
         const checkClusterNameSpace = await this.kubeConnector.get(URL);
-        if (checkClusterNameSpace.code || checkClusterNameSpace.message) {
-          return ns; // non cluster namespaces
+        if (checkClusterNameSpace.items && checkClusterNameSpace.items.length > 0) {
+          return null; // cluster namespaces
         }
-        return null; // cluster namespaces
+        return ns; // non cluster namespaces
       });
 
       // here need to await all async check cluster namespace calls completed

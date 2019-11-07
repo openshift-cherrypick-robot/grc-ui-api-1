@@ -611,6 +611,17 @@ export default class ComplianceModel {
         }
       });
     });
+    if (!_.isEmpty(resultsWithPolicyName)) {
+      const clusterstatuses = await this.kubeConnector.getResources(ns => `/apis/mcm.ibm.com/v1alpha1/namespaces/${ns}/clusterstatuses`);
+      resultsWithPolicyName.forEach((resultInOneCluster) => {
+        clusterstatuses.forEach((oneClusterStatus) => {
+          if (_.get(oneClusterStatus, 'metadata.name') === _.get(resultInOneCluster, 'cluster')) {
+            // eslint-disable-next-line no-param-reassign
+            resultInOneCluster.clusterURL = _.get(oneClusterStatus, 'spec.consoleURL');
+          }
+        });
+      });
+    }
     return resultsWithPolicyName;
   }
 

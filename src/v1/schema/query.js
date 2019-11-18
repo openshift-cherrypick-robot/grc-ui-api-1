@@ -19,6 +19,7 @@ type Query {
   policies(name: String, clusterName: String): [Policy]
   policiesInCluster(cluster: String): [Policy]
   clustersInPolicy(policy: String, hubNamespace: String): [ClusterInfo]
+  policiesInApplication(violatedPolicies: JSON): [Policy]
   violationsInPolicy(policy: String, namespace: String): [Violations]
   compliances(name: String, namespace: String): [Compliance]
   placementPolicies (selector: JSON): [PlacementPolicy]

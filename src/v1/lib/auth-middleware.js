@@ -34,8 +34,9 @@ async function getKubeToken({
     idToken = config.get('localKubeToken') || 'localdev';
   } else {
     const accessToken = authorization.substring(7);
-    idToken = cache.get(accessToken);
-    if (!idToken) {
+    // We cache the promise to prevent starting the same request multiple times.
+    let kubeTokenPromise = cache.get(`kubeToken_${accessToken}`);
+    if (!kubeTokenPromise) {
       const options = {
         url: `${config.get('PLATFORM_IDENTITY_PROVIDER_URL')}/v1/auth/exchangetoken`,
         headers: {
@@ -47,14 +48,14 @@ async function getKubeToken({
           access_token: accessToken,
         },
       };
+      kubeTokenPromise = httpLib(options);
+      cache.set(`kubeToken_${accessToken}`, kubeTokenPromise);
+    }
 
-      const response = await httpLib(options);
-      idToken = _.get(response, 'body.id_token');
-      if (idToken) {
-        cache.set(accessToken, idToken);
-      } else {
-        throw new Error(`Authentication error: ${JSON.stringify(response)}`);
-      }
+    const response = await kubeTokenPromise;
+    idToken = _.get(response, 'body.id_token');
+    if (!idToken) {
+      throw new Error(`Authentication error: ${JSON.stringify(response.body)}`);
     }
   }
 
@@ -70,6 +71,17 @@ async function getNamespaces({ iamToken, user }) {
   const idConnector = new IDConnector(options);
 
   return idConnector.get(`/identity/api/v1/users/${user}/getTeamResources?resourceType=namespace`);
+}
+
+async function getAccountData({ iamToken, user }) {
+  const options = { iamToken };
+  if (process.env.NODE_ENV === 'test') {
+    options.httpLib = createMockIAMHTTP();
+  }
+
+  const idConnector = new IDConnector(options);
+
+  return idConnector.get(`/identity/api/v1/users/${user}`);
 }
 
 export default function createAuthMiddleWare({
@@ -97,19 +109,25 @@ export default function createAuthMiddleWare({
     }
     // special case for redhat openshift, can't get user from idtoken
     if (!userName) {
-      const options = {
-        url: `${config.get('PLATFORM_IDENTITY_PROVIDER_URL')}/v1/auth/userinfo`,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        method: 'POST',
-        json: true,
-        form: {
-          access_token: iamToken,
-        },
-      };
+      // We cache the promise to prevent starting the same request multiple times.
+      let userInfoPromise = cache.get(`userInfo_${iamToken}`);
+      if (!userInfoPromise) {
+        const options = {
+          url: `${config.get('PLATFORM_IDENTITY_PROVIDER_URL')}/v1/auth/userinfo`,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          method: 'POST',
+          json: true,
+          form: {
+            access_token: iamToken,
+          },
+        };
+        userInfoPromise = httpLib(options);
+        cache.set(`userInfo_${iamToken}`, userInfoPromise);
+      }
 
-      const response = await httpLib(options);
+      const response = await userInfoPromise;
       userName = _.get(response, 'body.sub') || _.get(response, 'body.name');
       if (!userName) {
         throw new Error(`Authentication error: ${response.body}`);
@@ -128,8 +146,21 @@ export default function createAuthMiddleWare({
       cache.set(`namespaces_${iamToken}`, nsPromise);
     }
 
+    // Get user's account data.
+    // We cache the promise to prevent starting the same request multiple times.
+    let accountPromise = cache.get(`account_${iamToken}`);
+    if (!accountPromise) {
+      accountPromise = getAccountData({
+        iamToken,
+        user: userName,
+      });
+      cache.set(`account_${iamToken}`, accountPromise);
+    }
+
     req.user = {
+      name: userName,
       namespaces: await nsPromise,
+      userAccount: await accountPromise,
       iamToken,
     };
 

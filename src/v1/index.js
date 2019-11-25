@@ -60,6 +60,7 @@ graphQLServer.use('*', helmet({// These headers are dealt with in icp-management
   frameguard: false,
   noSniff: false,
   xssFilter: false,
+  noCache: true,
 }), requestLogger, cookieParser());
 
 graphQLServer.get('/livenessProbe', (req, res) => {

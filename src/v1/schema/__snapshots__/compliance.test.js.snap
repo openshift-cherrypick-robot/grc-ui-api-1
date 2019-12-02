@@ -1116,6 +1116,7 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusterNS": Object {},
               "clusters": Array [],
               "kind": "Policy",
               "metadata": Object {
@@ -1521,6 +1522,10 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusterNS": Object {
+                "cluster1": "cluster1",
+                "clusterhub": "clusterhub",
+              },
               "clusters": Array [],
               "kind": "Policy",
               "metadata": Object {
@@ -1917,6 +1922,10 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusterNS": Object {
+                "cluster1": "cluster1",
+                "clusterhub": "clusterhub",
+              },
               "clusters": Array [],
               "kind": "Policy",
               "metadata": Object {

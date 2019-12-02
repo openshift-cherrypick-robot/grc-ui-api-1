@@ -69,7 +69,7 @@ export const resolver = {
       const nsPromises = allNameSpace.map(async (ns) => {
         const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/`;
         const checkClusterNameSpace = await complianceModel.kubeConnector.get(URL);
-        if (checkClusterNameSpace.items && checkClusterNameSpace.items.length > 0) {
+        if (Array.isArray(checkClusterNameSpace.items) && checkClusterNameSpace.items.length > 0) {
           return null; // cluster namespaces
         }
         return ns; // non cluster namespaces

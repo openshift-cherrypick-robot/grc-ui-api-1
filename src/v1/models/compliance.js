@@ -137,6 +137,7 @@ export default class ComplianceModel {
 
   async getCompliances(name, namespace) {
     let policies = [];
+    const clusterNS = {};
 
     if (namespace) {
       if (name) {
@@ -165,7 +166,18 @@ export default class ComplianceModel {
       // check ns one by one, if got normal response then it's cluster namespace
         const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/`;
         const checkClusterNameSpace = await this.kubeConnector.get(URL);
-        if (checkClusterNameSpace.items && checkClusterNameSpace.items.length > 0) {
+        if (Array.isArray(checkClusterNameSpace.items) && checkClusterNameSpace.items.length > 0) {
+          checkClusterNameSpace.items.forEach((item) => {
+            // eslint maximum line length of 100 thus three if rather than one
+            if (item.metadata && item.metadata.name) {
+              // current each cluster only have one namespace
+              if (!Object.prototype.hasOwnProperty.call(clusterNS, item.metadata.name)) {
+                if (item.metadata.namespace) {
+                  clusterNS[item.metadata.name] = item.metadata.namespace;
+                }
+              }
+            }
+          });
           return null; // cluster namespaces
         }
         return ns; // non cluster namespaces
@@ -217,6 +229,7 @@ export default class ComplianceModel {
       namespace: _.get(entry, 'metadata.namespace', ''),
       remediation: _.get(entry, 'spec.remediationAction', ''),
       clusters: _.keys(_.get(entry, 'status.status'), ''),
+      clusterNS,
     }));
   }
 

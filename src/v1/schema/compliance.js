@@ -12,6 +12,7 @@ import ComplianceModel from '../models/compliance';
 export const typeDef = `
 type Compliance implements K8sObject {
   clusterCompliant: String
+  clusterNS: JSON
   compliancePolicies: [CompliancePolicies]
   compliancePolicy: [CompliancePolicyDetail]
   complianceStatus: [CompliantStatus]

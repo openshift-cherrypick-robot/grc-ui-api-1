@@ -38,7 +38,7 @@ async function getKubeToken({
     let kubeTokenPromise = cache.get(`kubeToken_${accessToken}`);
     if (!kubeTokenPromise) {
       const options = {
-        url: `${config.get('PLATFORM_IDENTITY_PROVIDER_URL')}/v1/auth/exchangetoken`,
+        url: `${config.get('cfcRouterUrl')}/idprovider/v1/auth/exchangetoken`,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
@@ -113,7 +113,7 @@ export default function createAuthMiddleWare({
       let userInfoPromise = cache.get(`userInfo_${iamToken}`);
       if (!userInfoPromise) {
         const options = {
-          url: `${config.get('PLATFORM_IDENTITY_PROVIDER_URL')}/v1/auth/userinfo`,
+          url: `${config.get('cfcRouterUrl')}/idprovider/v1/auth/userinfo`,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },

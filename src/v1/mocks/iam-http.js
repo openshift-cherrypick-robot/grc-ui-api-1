@@ -59,7 +59,6 @@ export default function createMockHttp() {
   return async function MockLib(params) {
     switch (true) {
       case params.url.includes('resourceType=namespace'):
-        return state.namespaces;
       default:
         return state.namespaces;
     }

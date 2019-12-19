@@ -137,12 +137,13 @@ export default class ComplianceModel {
 
   async getCompliances(name, namespace) {
     let policies = [];
+    const urlNameSpace = namespace || (config.get('complianceNamespace') ? config.get('complianceNamespace') : 'mcm');
     const clusterNS = {};
 
     if (namespace) {
       if (name) {
         // get single policy with a specific name and a specific namespace
-        const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies/${name}`;
+        const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${urlNameSpace}/policies/${name}`;
         const policyResponse = await this.kubeConnector.get(URL);
         if (policyResponse.code || policyResponse.message) {
           logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
@@ -151,7 +152,7 @@ export default class ComplianceModel {
         }
       } else {
         // for getting policy list with a specific namespace
-        const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${namespace || config.get('complianceNamespace') || 'mcm'}/policies`;
+        const URL = `/apis/policy.mcm.ibm.com/v1alpha1/namespaces/${urlNameSpace}/policies`;
         const policyResponse = await this.kubeConnector.get(URL);
         if (policyResponse.code || policyResponse.message) {
           logger.error(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);

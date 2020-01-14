@@ -1,6 +1,6 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2019. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2019, 2020. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -91,5 +91,21 @@ export default class SAModel extends KubeModel {
       throw new Error(`HCM ERROR ${JSON.stringify(response.errors)}`);
     }
     return response.data.occurrences || [];
+  }
+
+  async deleteOccurrences(selfLink, req) {
+    const url = config.get('NODE_ENV') === 'test' ? 'http://0.0.0.0' : config.get('cfcRouterUrl');
+    const iamToken = _.get(req, "cookies['cfc-access-token-cookie']") || config.get('cfc-access-token-cookie');
+    const opts = {
+      url: `${url}/findings/v1/${selfLink}`,
+      headers: {
+        AccessToken: iamToken,
+      },
+    };
+    const response = await this.kubeConnector.delete('', '', opts);
+    if (response.code || response.message) {
+      throw new Error(`MCM ERROR ${response.code} - ${response.message}`);
+    }
+    return response || 'Scucessfully delete occurrences';
   }
 }

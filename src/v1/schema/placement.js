@@ -1,6 +1,6 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2020. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -43,12 +43,10 @@ type Subject {
 }
 `;
 
-/* eslint-disable max-len */
 export const resolver = {
   Query: {
-    // applications: (root, args, { applicationModel }) => applicationModel.getApplications(args.name, args.namespace),
-    // deployables: (root, args, { applicationModel }) => applicationModel.getDeployables(args.selector),
-    placementPolicies: (root, args, { PlacementModel }) => PlacementModel.getPlacementPolicies(args.selector),
+    placementPolicies: (root, args, { PlacementModel }) =>
+      PlacementModel.getPlacementPolicies(args.selector),
   },
   Placement: {
     placementBindings: (parent, args, { PlacementModel }) =>

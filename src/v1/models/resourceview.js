@@ -18,10 +18,7 @@ const formatPod = (clusterName, pod) => ({
   metadata: pod.metadata,
   owners: pod.metadata.ownerReferences,
   podIP: pod.status.podIP,
-  // eslint-disable-next-line
-  restarts: _.reduce(pod.status.containerStatuses, (accum, curr) => {
-    return accum + curr.restartCount;
-  }, 0),
+  restarts: _.reduce(pod.status.containerStatuses, (accum, curr) => accum + curr.restartCount, 0),
   startedAt: pod.status.startTime,
   status: pod.status.phase,
 });

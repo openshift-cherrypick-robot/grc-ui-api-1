@@ -896,6 +896,7 @@ Object {
           "uid": null,
         },
         "objectTemplates": Array [],
+        "policyTemplates": Array [],
         "raw": Object {
           "apiVersion": "policy.mcm.ibm.com/v1alpha1",
           "items": Array [

@@ -36,11 +36,18 @@ describe('Placement Resolver', () => {
         query: `
         {
           placementPolicies {
+            metadata {
+              annotations
+              name
+              namespace
+              creationTimestamp
+              selfLink
+            }
             clusterLabels
-            raw
             clusterReplicas
             resourceSelector
             status
+            raw
           }
         }
       `,

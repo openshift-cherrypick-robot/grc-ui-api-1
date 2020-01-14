@@ -1,13 +1,12 @@
 /** *****************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2018, 2019. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2018, 2020. All Rights Reserved.
  *
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
 
-// eslint-disable-next-line
 export const typeDef = `
 type Query {
   #applications(name: String, namespace: String): [Application]
@@ -61,6 +60,9 @@ type Mutation {
   # Delete Kubernetes Compliance
   deleteCompliance(selfLink: String!, resources: JSON): String
 
+  # sa
+  # Delete Kubernetes Application
+  deleteOccurrences(selfLink: String!): String
 }
 
 # Common fields for all Kubernetes objects

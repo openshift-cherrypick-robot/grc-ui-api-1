@@ -7,7 +7,6 @@
  * Contract with IBM Corp.
  ****************************************************************************** */
 
-/* eslint-disable import/prefer-default-export */
 export const mockOccurrences = {
   data: {
     occurrences: [
@@ -58,7 +57,6 @@ export const mockOccurrences = {
   },
 };
 
-/* eslint-disable import/prefer-default-export */
 export const mockDiffIdOccurrences = {
   data: {
     occurrences: [

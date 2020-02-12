@@ -11,11 +11,12 @@ import express from 'express';
 import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { isInstance as isApolloErrorInstance, formatError as formatApolloError } from 'apollo-errors';
 import bodyParser from 'body-parser';
-import { app as inspect } from '@icp/security-middleware';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import { app as inspect } from './lib/inspect';
+import authMiddleware from './lib/auth-middleware';
 
 import logger from './lib/logger';
 
@@ -31,7 +32,6 @@ import SAModel from './models/sa';
 
 import schema from './schema/';
 import config from '../../config';
-import authMiddleware from './lib/auth-middleware';
 
 export const GRAPHQL_PATH = `${config.get('contextPath')}/graphql`;
 export const GRAPHIQL_PATH = `${config.get('contextPath')}/graphiql`;
@@ -87,7 +87,7 @@ if (isTest) {
 
 graphQLServer.use(...auth);
 graphQLServer.use(GRAPHQL_PATH, bodyParser.json(), graphqlExpress(async (req) => {
-  const namespaces = req.user.namespaces.map(ns => ns.namespaceId);
+  const namespaces = req.user.namespaces.items.map(ns => ns.metadata.name);
   const kubeConnector = new KubeConnector({
     token: req.kubeToken,
     namespaces,

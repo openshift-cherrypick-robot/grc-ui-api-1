@@ -5,7 +5,9 @@
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
- ****************************************************************************** */
+ ********************************************************************************
+ * Copyright (c) 2020 Red Hat, Inc.
+ */
 
 export const typeDef = `
 # MCM Placement
@@ -46,12 +48,12 @@ type Subject {
 export const resolver = {
   Query: {
     placementPolicies: (root, args, { PlacementModel }) =>
-      PlacementModel.getPlacementPolicies(args.selector),
+      PlacementModel.getPlacementRules(args.selector),
   },
   Placement: {
     placementBindings: (parent, args, { PlacementModel }) =>
       PlacementModel.getPlacementBindings({ matchNames: parent.placementBindingNames }),
     placementPolicies: (parent, args, { PlacementModel }) =>
-      PlacementModel.getPlacementPolicies({ matchNames: parent.placementPolicyNames }),
+      PlacementModel.getPlacementRules({ matchNames: parent.placementPolicyNames }),
   },
 };

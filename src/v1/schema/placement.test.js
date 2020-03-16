@@ -5,7 +5,9 @@
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
- ****************************************************************************** */
+ ********************************************************************************
+ * Copyright (c) 2020 Red Hat, Inc.
+ */
 
 import supertest from 'supertest';
 import nock from 'nock';
@@ -17,15 +19,15 @@ describe('Placement Resolver', () => {
     // specify the url to be intercepted
     const APIServer = nock(hostUrl);
 
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/placementpolicies')
+    APIServer.get('/apps.open-cluster-management.io/v1/namespaces/default/placementrules')
       .reply(200, mockPlacementListResponse);
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/kube-system/placementpolicies')
+    APIServer.get('/apps.open-cluster-management.io/v1/namespaces/kube-system/placementrules')
       .reply(200, mockPlacementListResponse);
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/mcm/placementpolicies')
+    APIServer.get('/apps.open-cluster-management.io/v1/namespaces/mcm/placementrules')
       .reply(200, mockPlacementListResponse);
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/cluster1/placementpolicies')
+    APIServer.get('/apps.open-cluster-management.io/v1/namespaces/cluster1/placementrules')
       .reply(200, mockPlacementListResponse);
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/clusterhub/placementpolicies')
+    APIServer.get('/apps.open-cluster-management.io/v1/namespaces/clusterhub/placementrules')
       .reply(200, mockPlacementListResponse);
   });
 

@@ -5,7 +5,9 @@
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
- ****************************************************************************** */
+ ********************************************************************************
+ * Copyright (c) 2020 Red Hat, Inc.
+ */
 
 // import _ from 'lodash';
 import KubeModel from './kube';
@@ -31,12 +33,12 @@ export default class PlacementModel extends KubeModel {
     }));
   }
 
-  async getPlacementPolicies(selector = {}) {
+  async getPlacementRules(selector = {}) {
     const { matchNames } = selector;
 
     const response = await this.kubeConnector.getResources(
-      ns => `/apis/mcm.ibm.com/v1alpha1/namespaces/${ns}/placementpolicies`,
-      { kind: 'PlacementPolicy' },
+      ns => `/apis/apps.open-cluster-management.io/v1/namespaces/${ns}/placementrules`,
+      { kind: 'PlacementRule' },
     );
     const placementPolicies = matchNames ? filterByName(matchNames, response) : response;
 

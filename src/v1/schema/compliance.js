@@ -5,7 +5,9 @@
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
- ****************************************************************************** */
+ ********************************************************************************
+ * Copyright (c) 2020 Red Hat, Inc.
+ */
 
 import ComplianceModel from '../models/compliance';
 
@@ -112,7 +114,7 @@ export const resolver = {
     clusterCompliant: parent => ComplianceModel.resolveClusterCompliant(parent),
     annotations: parent => ComplianceModel.resolveAnnotations(parent),
     placementPolicies: (parent, args, { complianceModel }) =>
-      complianceModel.getPlacementPolicies(parent),
+      complianceModel.getPlacementRules(parent),
     placementBindings: (parent, args, { complianceModel }) =>
       complianceModel.getPlacementBindings(parent),
     allTemplates: (parent, args, { complianceModel }) =>

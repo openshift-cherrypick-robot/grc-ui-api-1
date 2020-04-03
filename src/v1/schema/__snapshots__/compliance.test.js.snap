@@ -1116,6 +1116,7 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusterConsoleURL": Object {},
               "clusterNS": Object {},
               "clusters": Array [],
               "kind": "Policy",
@@ -1522,9 +1523,11 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusterConsoleURL": Object {
+                "cluster1": "https://console-openshift-console.apps.cluster1.dev08.red-chesterfield.com",
+              },
               "clusterNS": Object {
                 "cluster1": "cluster1",
-                "clusterhub": "clusterhub",
               },
               "clusters": Array [],
               "kind": "Policy",
@@ -1922,9 +1925,11 @@ Object {
             "objectTemplates": Array [],
             "raw": Object {
               "apiVersion": "policy.mcm.ibm.com/v1alpha1",
+              "clusterConsoleURL": Object {
+                "cluster1": "https://console-openshift-console.apps.cluster1.dev08.red-chesterfield.com",
+              },
               "clusterNS": Object {
                 "cluster1": "cluster1",
-                "clusterhub": "clusterhub",
               },
               "clusters": Array [],
               "kind": "Policy",

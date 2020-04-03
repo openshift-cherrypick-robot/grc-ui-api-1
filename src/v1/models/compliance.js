@@ -141,6 +141,7 @@ export default class ComplianceModel {
     let policies = [];
     const urlNameSpace = namespace || (config.get('complianceNamespace') ? config.get('complianceNamespace') : 'mcm');
     const clusterNS = {};
+    const clusterConsoleURL = {};
 
     if (namespace) {
       if (name) {
@@ -166,17 +167,30 @@ export default class ComplianceModel {
       const allNameSpace = this.kubeConnector.namespaces;
       // remove cluster namespaces
       const nsPromises = allNameSpace.map(async (ns) => {
-      // check ns one by one, if got normal response then it's cluster namespace
-        const URL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters/`;
-        const checkClusterNameSpace = await this.kubeConnector.get(URL);
-        if (Array.isArray(checkClusterNameSpace.items) && checkClusterNameSpace.items.length > 0) {
-          checkClusterNameSpace.items.forEach((item) => {
-            // eslint maximum line length of 100 thus three if rather than one
+        // check ns one by one, if got normal response then it's cluster namespace
+        const checkClusterURL = `/apis/clusterregistry.k8s.io/v1alpha1/namespaces/${ns}/clusters`;
+        const checkClusterStatusURL = `/apis/mcm.ibm.com/v1alpha1/namespaces/${ns}/clusterstatuses`;
+        const [clusters, clusterstatuses] = await Promise.all([
+          this.kubeConnector.get(checkClusterURL),
+          this.kubeConnector.get(checkClusterStatusURL),
+        ]);
+        if (Array.isArray(clusters.items) && clusters.items.length > 0) {
+          clusters.items.forEach((item) => {
             if (item.metadata && item.metadata.name) {
               // current each cluster only have one namespace
               if (!Object.prototype.hasOwnProperty.call(clusterNS, item.metadata.name)) {
                 if (item.metadata.namespace) {
                   clusterNS[item.metadata.name] = item.metadata.namespace;
+                }
+              }
+            }
+          });
+          clusterstatuses.items.forEach((item) => {
+            if (item.metadata && item.metadata.name) {
+              // current each cluster only have one namespace
+              if (!Object.prototype.hasOwnProperty.call(clusterConsoleURL, item.metadata.name)) {
+                if (item.spec && item.spec.consoleURL) {
+                  clusterConsoleURL[item.metadata.name] = item.spec.consoleURL;
                 }
               }
             }
@@ -233,6 +247,7 @@ export default class ComplianceModel {
       remediation: _.get(entry, 'spec.remediationAction', ''),
       clusters: _.keys(_.get(entry, 'status.status'), ''),
       clusterNS,
+      clusterConsoleURL,
     }));
   }
 

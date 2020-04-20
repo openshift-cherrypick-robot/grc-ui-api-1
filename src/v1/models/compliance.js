@@ -178,20 +178,18 @@ export default class ComplianceModel {
           clusters.items.forEach((item) => {
             if (item.metadata && item.metadata.name) {
               // current each cluster only have one namespace
-              if (!Object.prototype.hasOwnProperty.call(clusterNS, item.metadata.name)) {
-                if (item.metadata.namespace) {
-                  clusterNS[item.metadata.name] = item.metadata.namespace;
-                }
+              if (!Object.prototype.hasOwnProperty.call(clusterNS, item.metadata.name) &&
+              item.metadata.namespace) {
+                clusterNS[item.metadata.name] = item.metadata.namespace;
               }
             }
           });
           clusterstatuses.items.forEach((item) => {
             if (item.metadata && item.metadata.name) {
               // current each cluster only have one namespace
-              if (!Object.prototype.hasOwnProperty.call(clusterConsoleURL, item.metadata.name)) {
-                if (item.spec && item.spec.consoleURL) {
-                  clusterConsoleURL[item.metadata.name] = item.spec.consoleURL;
-                }
+              if (!Object.prototype.hasOwnProperty.call(clusterConsoleURL, item.metadata.name) &&
+              (item.spec && item.spec.consoleURL)) {
+                clusterConsoleURL[item.metadata.name] = item.spec.consoleURL;
               }
             }
           });
@@ -839,7 +837,8 @@ export default class ComplianceModel {
         });
       } else if (_.get(res, 'templateType') === 'object-templates' || _.get(res, 'templateType') === 'policy-templates') {
         violationArray.push({
-          name: _.get(res, 'objectDefinition.metadata.name', '-'),
+          name: _.get(res, 'objectDefinition.metadata.name') ?
+            _.get(res, 'objectDefinition.metadata.name') : _.get(res, 'objectDefinition.kind', '-'),
           cluster: _.get(cluster, 'clustername', '-'),
           status: this.resolvePolicyStatus(res),
           message: (templateCondition && _.get(templateCondition, 'message', '-')) || '-',

@@ -6,6 +6,7 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+/* Copyright (c) 2020 Red Hat, Inc. */
 
 import ComplianceModel from '../models/compliance';
 
@@ -17,7 +18,7 @@ type Policy implements K8sObject {
   metadata: Metadata
   rules: [PolicyRules]
   # Possible values are: compliant, notcompliant, invalid
-  status: String
+  status: JSON
   roleTemplates: [PolicyTemplate]
   roleBindingTemplates: [PolicyTemplate]
   objectTemplates: [PolicyTemplate]

@@ -6,22 +6,25 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+/* Copyright (c) 2020 Red Hat, Inc. */
 
 import supertest from 'supertest';
 import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
+import ApiURL from '../lib/ApiURL';
 import {
   mockPolicyListResponse, mockSinglePolicyResponse, mockCreatePolicy, mockDeleteResponse,
   mockClusterListResponse, mockCluster1ListResponse, mockClusterHubListResponse,
   mockDefaultListResponse, mockKubeSystemListResponse, mockViolationListResponse,
   mockCreateResourcePost, mockCreateResourceGet, mockCompletedResourceView,
+  mockNewAPISinglePolicyResponse,
 } from '../mocks/PolicyList';
 import { mockCluster1Response, mockClusterHubResponse, mockMCMResponse, mockDefaultResponse, mockKubeSystemResponse } from '../mocks/ClusterList';
 
 describe('Policy Resolver', () => {
   beforeAll(() => {
     // specify the url to be intercepted
-    const APIServer = nock('http://0.0.0.0/kubernetes/apis');
+    const APIServer = nock(ApiURL.hostUrl);
 
     APIServer.persist()
       .post('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews')
@@ -102,32 +105,37 @@ describe('Policy Resolver', () => {
 
     APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/clusterhub/clusters/clusterhub')
       .reply(200, mockClusterHubResponse);
+
+    APIServer.get('/policies.open-cluster-management.io/v1/namespaces/calamari/policies/default.case1-test-policy')
+      .reply(200, mockNewAPISinglePolicyResponse);
   });
 
-  test('Correctly Resolves Policy List Query', (done) => {
-    supertest(server)
-      .post(GRAPHQL_PATH)
-      .send({
-        query: `
-        {
-          policies {
-            enforcement
-            metadata {
-              name
-              namespace
-              selfLink
-              creationTimestamp
-            }
-            status
-          }
-        }
-      `,
-      })
-      .end((err, res) => {
-        expect(JSON.parse(res.text)).toMatchSnapshot();
-        done();
-      });
-  });
+  // Don't currently have Policy List, remove
+
+  // test('Correctly Resolves Policy List Query', (done) => {
+  //   supertest(server)
+  //     .post(GRAPHQL_PATH)
+  //     .send({
+  //       query: `
+  //       {
+  //         policies {
+  //           enforcement
+  //           metadata {
+  //             name
+  //             namespace
+  //             selfLink
+  //             creationTimestamp
+  //           }
+  //           status
+  //         }
+  //       }
+  //     `,
+  //     })
+  //     .end((err, res) => {
+  //       expect(JSON.parse(res.text)).toMatchSnapshot();
+  //       done();
+  //     });
+  // });
 
   test('Correctly Resolves All Policies per Cluster List Query', (done) => {
     supertest(server)
@@ -203,7 +211,7 @@ describe('Policy Resolver', () => {
       .send({
         query: `
         {
-          policies(name:"policy-all", clusterName:"cluster1") {
+          policies(name:"default.case1-test-policy", clusterName:"calamari") {
             cluster
             message
             metadata {
@@ -428,28 +436,30 @@ describe('Policy Resolver', () => {
       });
   });
 
-  test('Correctly Resolves Violations List Query', (done) => {
-    supertest(server)
-      .post(GRAPHQL_PATH)
-      .send({
-        query: `
-        {
-          violationsInPolicy(policy: "policy-namespace", namespace: "mcm") {
-            cluster
-            message
-            name
-            reason
-            selector
-            status
-          }
-        }
-      `,
-      })
-      .end((err, res) => {
-        expect(JSON.parse(res.text)).toMatchSnapshot();
-        done();
-      });
-  });
+  // Commit out as we don't currently have violations return - May20
+
+  // test('Correctly Resolves Violations List Query', (done) => {
+  //   supertest(server)
+  //     .post(GRAPHQL_PATH)
+  //     .send({
+  //       query: `
+  //       {
+  //         violationsInPolicy(policy: "policy-namespace", namespace: "mcm") {
+  //           cluster
+  //           message
+  //           name
+  //           reason
+  //           selector
+  //           status
+  //         }
+  //       }
+  //     `,
+  //     })
+  //     .end((err, res) => {
+  //       expect(JSON.parse(res.text)).toMatchSnapshot();
+  //       done();
+  //     });
+  // });
 
   test('Correctly Resolves Delete Policy Mutation', (done) => {
     supertest(server)

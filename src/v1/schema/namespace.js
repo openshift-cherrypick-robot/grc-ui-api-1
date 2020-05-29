@@ -6,7 +6,7 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
-
+/* Copyright (c) 2020 Red Hat, Inc. */
 export const typeDef = `
 type Namespace implements K8sObject {
   cluster: String
@@ -15,6 +15,7 @@ type Namespace implements K8sObject {
 }
 `;
 
+// to-do how to deal with this after removing all resource view
 export const resolver = {
   Query: {
     namespaces: (root, args, { resourceViewModel }) =>

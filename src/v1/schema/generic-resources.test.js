@@ -15,7 +15,7 @@ import {
   kubeGetMock, mockAPIResourceList,
   mockCreateResourcesResponse, mockUpdateResourcesResponse,
 } from '../mocks/GenericResources';
-import ApiURL from '../lib/ApiURL';
+import ApiGroup from '../lib/ApiGroup';
 
 describe('Generic Resources Resolver', () => {
   beforeAll(() => {
@@ -24,10 +24,10 @@ describe('Generic Resources Resolver', () => {
 
     // define the method to be intercepted
     APIServer.get('/').reply(200, kubeGetMock);
-    APIServer.get('/apis/policy.mcm.ibm.com/v1alpha1').reply(200, mockAPIResourceList);
-    APIServer.post(`${ApiURL.mcmPolicyApiURL}mcm/policies`)
+    APIServer.get(`/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}`).reply(200, mockAPIResourceList);
+    APIServer.post(`/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/mcm/policies`)
       .reply(200, mockCreateResourcesResponse);
-    APIServer.put(`${ApiURL.mcmComplianceApiURL}mcm/compliances/test-policy`)
+    APIServer.put(`/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/mcm/compliances/test-policy`)
       .reply(200, mockUpdateResourcesResponse);
   });
 
@@ -40,7 +40,7 @@ describe('Generic Resources Resolver', () => {
           createResources(
             resources: [
               {
-                apiVersion: "policy.mcm.ibm.com/v1alpha1",
+                apiVersion: "policies.open-cluster-management.io/v1",
                 kind: "Policy",
                 metadata: {
                   name: "test-policy",
@@ -72,32 +72,6 @@ describe('Generic Resources Resolver', () => {
       });
   });
 
-  // object-templates: [
-  //   {
-  //     complianceType: "musthave",
-  //     objectDefinition: {
-  //       apiVersion: "v1",
-  //       kind: "LimitRange",
-  //       metadata: {
-  //         name: "mem-limit-range"
-  //       },
-  //       spec: {
-  //         limits: [
-  //           {
-  //             default: {
-  //               memory: "512Mi"
-  //             },
-  //             defaultRequest: {
-  //               memory: "256Mi"
-  //             },
-  //             type: "Container"
-  //           }
-  //         ]
-  //       }
-  //     }
-  //   }
-  // ]
-
   test('Correctly Resolves Update Resource Mutation', (done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
@@ -109,7 +83,7 @@ describe('Generic Resources Resolver', () => {
             namespace: "mcm", 
             resourceType: "HCMCompliance", 
             body: [{
-              apiVersion: "policy.mcm.ibm.com/v1alpha1", 
+              apiVersion: "policies.open-cluster-management.io/v1", 
               kind: "Policy", 
               metadata: {
                 name: "test-policy",

@@ -11,12 +11,11 @@
 import supertest from 'supertest';
 import nock from 'nock';
 import server, { GRAPHQL_PATH } from '../index';
-import ApiURL from '../lib/ApiURL';
+import ApiGroup from '../lib/ApiGroup';
 import {
   mockPolicyListResponse, mockSinglePolicyResponse, mockCreatePolicy, mockDeleteResponse,
   mockClusterListResponse, mockCluster1ListResponse, mockClusterHubListResponse,
   mockDefaultListResponse, mockKubeSystemListResponse, mockViolationListResponse,
-  mockCreateResourcePost, mockCreateResourceGet, mockCompletedResourceView,
   mockNewAPISinglePolicyResponse,
 } from '../mocks/PolicyList';
 import { mockCluster1Response, mockClusterHubResponse, mockMCMResponse, mockDefaultResponse, mockKubeSystemResponse } from '../mocks/ClusterList';
@@ -24,25 +23,15 @@ import { mockCluster1Response, mockClusterHubResponse, mockMCMResponse, mockDefa
 describe('Policy Resolver', () => {
   beforeAll(() => {
     // specify the url to be intercepted
-    const APIServer = nock(ApiURL.hostUrl);
+    const APIServer = nock(ApiGroup.hostUrl);
 
-    APIServer.persist()
-      .post('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews')
-      .reply(200, mockCreateResourcePost);
-
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews?fieldSelector=metadata.name=policies-policy-mcm-ibm-com-1563995392802')
-      .reply(200, mockCreateResourceGet);
-
-    APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews/policies-policy-mcm-ibm-com-1563995392802')
-      .reply(200, mockCompletedResourceView);
-
-    APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+    APIServer.get(`/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/mcm/policies`)
       .reply(200, mockPolicyListResponse);
 
-    APIServer.get('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies/policy-all')
+    APIServer.get(`/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/mcm/policies/policy-all`)
       .reply(200, mockSinglePolicyResponse);
 
-    APIServer.post('/policy.mcm.ibm.com/v1alpha1/namespaces/mcm/policies')
+    APIServer.post(`/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/mcm/policies`)
       .reply(200, mockCreatePolicy);
 
     APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/mcm/clusterstatuses')
@@ -60,17 +49,14 @@ describe('Policy Resolver', () => {
     APIServer.get('/mcm.ibm.com/v1alpha1/namespaces/clusterhub/clusterstatuses')
       .reply(200, mockClusterHubListResponse);
 
-    APIServer.post('/policies.policy.mcm.ibm.com')
+    APIServer.post('/policies.policies.open-cluster-management.io')
       .reply(200, mockViolationListResponse);
 
-    APIServer.delete('/policy.mcm.ibm.com/v1alpha1/namespaces/default/policies/test-policy')
+    APIServer.delete(`/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/default/policies/test-policy`)
       .reply(200, mockDeleteResponse);
 
     APIServer.delete('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters')
       .reply(200, mockDefaultResponse);
-
-    APIServer.delete('/mcm.ibm.com/v1alpha1/namespaces/default/resourceviews/policies-policy-mcm-ibm-com-1563995392802')
-      .reply(200, mockDeleteResponse);
 
     APIServer.get('/clusterregistry.k8s.io/v1alpha1/namespaces/default/clusters/cluster1')
       .reply(200, mockDefaultResponse);
@@ -109,33 +95,6 @@ describe('Policy Resolver', () => {
     APIServer.get('/policies.open-cluster-management.io/v1/namespaces/calamari/policies/default.case1-test-policy')
       .reply(200, mockNewAPISinglePolicyResponse);
   });
-
-  // Don't currently have Policy List, remove
-
-  // test('Correctly Resolves Policy List Query', (done) => {
-  //   supertest(server)
-  //     .post(GRAPHQL_PATH)
-  //     .send({
-  //       query: `
-  //       {
-  //         policies {
-  //           enforcement
-  //           metadata {
-  //             name
-  //             namespace
-  //             selfLink
-  //             creationTimestamp
-  //           }
-  //           status
-  //         }
-  //       }
-  //     `,
-  //     })
-  //     .end((err, res) => {
-  //       expect(JSON.parse(res.text)).toMatchSnapshot();
-  //       done();
-  //     });
-  // });
 
   test('Correctly Resolves All Policies per Cluster List Query', (done) => {
     supertest(server)
@@ -177,7 +136,15 @@ describe('Policy Resolver', () => {
       .send({
         query: `
         {
-          policiesInApplication(violatedPolicies:[{name:"policies-policy-mcm-ibm-com-1563995392802",namespace:"default",clusters:[{name:"cluster1"}]},{name:"policy-namespace",namespace:"default",clusters:[{name:"cluster1"}]}]) {
+        policiesInApplication(
+          violatedPolicies:
+          [
+            {
+            name:"policies-policy-mcm-ibm-com-1563995392802",
+            namespace:"default",
+            clusters:[{name:"cluster1"}]},
+            {name:"policy-namespace",namespace:"default",clusters:[{name:"cluster1"}]}
+          ]) {
             cluster
             metadata {
               name
@@ -303,7 +270,7 @@ describe('Policy Resolver', () => {
         query: `
         mutation {
           createPolicy(resources:[{
-            apiVersion: "policy.mcm.ibm.com/v1alpha1",
+            apiVersion: "policies.open-cluster-management.io/v1",
             kind: "Policy",
             metadata: {
               name: "test-policy",
@@ -433,31 +400,6 @@ describe('Policy Resolver', () => {
         done();
       });
   });
-
-  // Commit out as we don't currently have violations return - May20
-
-  // test('Correctly Resolves Violations List Query', (done) => {
-  //   supertest(server)
-  //     .post(GRAPHQL_PATH)
-  //     .send({
-  //       query: `
-  //       {
-  //         violationsInPolicy(policy: "policy-namespace", namespace: "mcm") {
-  //           cluster
-  //           message
-  //           name
-  //           reason
-  //           selector
-  //           status
-  //         }
-  //       }
-  //     `,
-  //     })
-  //     .end((err, res) => {
-  //       expect(JSON.parse(res.text)).toMatchSnapshot();
-  //       done();
-  //     });
-  // });
 
   test('Correctly Resolves Delete Policy Mutation', (done) => {
     supertest(server)

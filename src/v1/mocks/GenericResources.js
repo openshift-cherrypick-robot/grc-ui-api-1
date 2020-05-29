@@ -8,12 +8,12 @@
  ****************************************************************************** */
 /* Copyright (c) 2020 Red Hat, Inc. */
 
-import ApiURL from '../lib/ApiURL';
+import ApiGroup from '../lib/ApiGroup';
 
 export const mockAPIResourceList = {
   kind: 'APIResourceList',
   apiVersion: 'v1',
-  groupVersion: 'policy.mcm.ibm.com/v1alpha1',
+  groupVersion: 'policies.open-cluster-management.io/v1',
   resources:
   [
     {
@@ -90,8 +90,8 @@ export const kubeGetMock = {
     '/apis/policies.ibm.com',
     '/apis/policies.ibm.com/v1alpha1',
     '/apis/policy',
-    '/apis/policy.mcm.ibm.com',
-    '/apis/policy.mcm.ibm.com/v1alpha1',
+    '/apis/policies.open-cluster-management.io',
+    '/apis/policies.open-cluster-management.io/v1',
     '/apis/policy/v1beta1',
     '/apis/rbac.authorization.k8s.io',
     '/apis/rbac.authorization.k8s.io/v1',
@@ -141,7 +141,7 @@ export const mockCreateResourcesResponse = {
       errors: [],
       result: [
         {
-          apiVersion: 'policy.mcm.ibm.com/v1alpha1',
+          apiVersion: 'policies.open-cluster-management.io/v1',
           kind: 'Policy',
           metadata: {
             creationTimestamp: '2019-07-24T16:13:38Z',
@@ -149,7 +149,7 @@ export const mockCreateResourcesResponse = {
             name: 'test-policy',
             namespace: 'mcm',
             resourceVersion: '1688805',
-            selfLink: `${ApiURL.mcmPolicyApiURL}mcm/policies/test-policy`,
+            selfLink: `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/mcm/policies/test-policy`,
             uid: 'fec7f06c-ae2d-11e9-8a41-005056a061f1',
           },
           spec: {
@@ -173,13 +173,13 @@ export const mockCreateResourcesResponse = {
 export const mockUpdateResourcesResponse = {
   data: {
     updateResource: {
-      apiVersion: 'policy.mcm.ibm.com/v1alpha1',
+      apiVersion: 'policies.open-cluster-management.io/v1',
       kind: 'Policy',
       metadata: {
         annotations: {
-          'policy.mcm.ibm.com/categories': 'hello',
-          'policy.mcm.ibm.com/controls': '',
-          'policy.mcm.ibm.com/standards': '',
+          'policies.open-cluster-management.io/categories': 'hello',
+          'policies.open-cluster-management.io/controls': '',
+          'policies.open-cluster-management.io/standards': '',
           'seed-generation': '1',
         },
         creationTimestamp: '2019-07-24T13:27:59Z',
@@ -190,7 +190,7 @@ export const mockUpdateResourcesResponse = {
         name: 'test-policy',
         namespace: 'mcm',
         resourceVersion: '1673886',
-        selfLink: `${ApiURL.mcmPolicyApiURL}mcm/policies/test-policy`,
+        selfLink: `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/mcm/policies/test-policy`,
         uid: 'da8f9553-ae16-11e9-8a41-005056a061f1',
       },
       spec: {

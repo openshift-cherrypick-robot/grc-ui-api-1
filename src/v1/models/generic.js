@@ -11,7 +11,7 @@
 import _ from 'lodash';
 import KubeModel from './kube';
 import logger from '../lib/logger';
-import ApiURL from '../lib/ApiURL';
+import ApiGroup from '../lib/ApiGroup';
 
 const noResourcetypeStr = '##cannot find resourcetype##';
 
@@ -117,13 +117,13 @@ export default class GenericModel extends KubeModel {
     if (!selfLink) {
       switch (resourceType) {
         case 'HCMCluster':
-          endpointURL = 'clusterregistry.k8s.io';
+          endpointURL = `${ApiGroup.clusterRegistryGroup}/${ApiGroup.mcmVersion}`;
           resourceName = 'clusters';
           break;
         default:
           throw new Error('MCM ERROR cannot find matched resource type');
       }
-      response = await this.kubeConnector.patch(`/apis/${endpointURL}/v1alpha1/namespaces/${namespace}/${resourceName}/${name}`, requestBody);
+      response = await this.kubeConnector.patch(`/apis/${endpointURL}/namespaces/${namespace}/${resourceName}/${name}`, requestBody);
     } else {
       // will use selfLink by default
       response = await this.kubeConnector.patch(`${selfLink}`, requestBody);
@@ -135,44 +135,14 @@ export default class GenericModel extends KubeModel {
   }
 
   async putResource(args) {
-    /*
-    update k8s resources
-    the Content-Type is 'application/json'
-    the request body should look like:
-    {
-      "apiVersion": "compliance.mcm.ibm.com/v1alpha1",
-      "kind": "Compliance",
-      "metadata": {
-        "name": "compliance-test-3",
-        "finalizers": [
-          "finalizer.mcm.ibm.com"
-        ],
-        "generation": 1,
-        "namespace": "mcm",
-        "resourceVersion": "2462226"
-      },
-     }
-    */
-    let endpointURL = '';
-    let resourceName = '';
     let response;
-    const {
-      namespace, name, resourceType, body, selfLink,
-    } = args;
+    const { body, selfLink } = args;
     const requestBody = {
       body,
     };
 
     if (!selfLink) {
-      switch (resourceType) {
-        case 'HCMCompliance':
-          endpointURL = 'compliance.mcm.ibm.com';
-          resourceName = 'compliances';
-          break;
-        default:
-          throw new Error('MCM ERROR cannot find matched resource type');
-      }
-      response = await this.kubeConnector.put(`/apis/${endpointURL}/v1alpha1/namespaces/${namespace}/${resourceName}/${name}`, requestBody);
+      throw new Error('MCM ERROR cannot find matched resource type');
     } else {
       // will use selfLink by default
       response = await this.kubeConnector.put(`${selfLink}`, requestBody);
@@ -186,7 +156,7 @@ export default class GenericModel extends KubeModel {
   async resourceAction(resourceType, actionType, resourceName, resourceNamespace, clusterName) {
     const name = `${resourceType}-workset-${this.kubeConnector.uid()}`;
     const body = {
-      apiVersion: 'mcm.ibm.com/v1alpha1',
+      apiVersion: `${ApiGroup.policiesGroup}/${ApiGroup.version}`,
       kind: 'WorkSet',
       metadata: {
         name,
@@ -218,7 +188,8 @@ export default class GenericModel extends KubeModel {
       };
     }
 
-    const response = await this.kubeConnector.post(`${ApiURL.mcmNSApiURL}${this.kubeConnector.resourceViewNamespace}/worksets`, body);
+    // to-do how to deal with this after removing all resource view
+    const response = await this.kubeConnector.post(`/apis/${ApiGroup.mcmGroup}/${ApiGroup.mcmVersion}/namespaces/${this.kubeConnector.resourceViewNamespace}/worksets`, body);
     if (response.status === 'Failure' || response.code >= 400) {
       throw new Error(`Create Resource Action Failed [${response.code}] - ${response.message}`);
     }
@@ -229,7 +200,8 @@ export default class GenericModel extends KubeModel {
       const result = await Promise.race([pollPromise, this.kubeConnector.timeout()]);
       logger.debug('result:', result);
       if (result) {
-        this.kubeConnector.delete(`${ApiURL.mcmNSApiURL}${this.kubeConnector.resourceViewNamespace}/worksets/${response.metadata.name}`)
+        // to-do how to deal with this after removing all resource view
+        this.kubeConnector.delete(`/apis/${ApiGroup.mcmGroup}/${ApiGroup.mcmVersion}/namespaces/${this.kubeConnector.resourceViewNamespace}/worksets/${response.metadata.name}`)
           .catch(e => logger.error(`Error deleting workset ${response.metadata.name}`, e.message));
       }
       const reason = _.get(result, 'status.reason');
@@ -246,10 +218,10 @@ export default class GenericModel extends KubeModel {
   }
 
   async getLogs(containerName, podName, podNamespace, clusterName) {
-    const cluster = await this.kubeConnector.getResources(ns => `${ApiURL.clusterRegistryApiURL}${ns}/clusters/${clusterName}`);
+    const cluster = await this.kubeConnector.getResources(ns => `/apis/${ApiGroup.clusterRegistryGroup}/${ApiGroup.mcmVersion}/namespaces/${ns}/clusters/${clusterName}`);
     if (cluster && cluster.length === 1) {
       const clusterNamespace = cluster[0].metadata.namespace;
-      return this.kubeConnector.get(`${ApiURL.mcmNSApiURL}
+      return this.kubeConnector.get(`/apis/${ApiGroup.mcmGroup}/${ApiGroup.mcmVersion}/namespaces/
       ${clusterNamespace}/clusterstatuses/${clusterName}/log/${podNamespace}/
       ${podName}/${containerName}?tailLines=1000`, { json: false }, true);
     }

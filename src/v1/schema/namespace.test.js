@@ -31,11 +31,11 @@ describe('Namespace Resolver', () => {
       .reply(200, mockResource);
     APIServer.get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/namespaces')
       .reply(200, mockResourceView);
-    APIServer.get('/policies.open-cluster-management.io/v1/namespaces/mcm/namespaces')
+    APIServer.get('/policy.open-cluster-management.io/v1/namespaces/mcm/namespaces')
       .reply(200, mockResponse);
   });
 
-  test('Correctly Resolves Namespace Query', (done) => {
+  test('Correctly Resolves Namespace Query', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -60,5 +60,5 @@ describe('Namespace Resolver', () => {
         expect(textMessage).toMatchSnapshot();
         done();
       });
-  });
+  }));
 });

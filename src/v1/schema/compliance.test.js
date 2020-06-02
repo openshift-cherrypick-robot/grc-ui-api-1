@@ -35,26 +35,26 @@ describe('Compliance Resolver', () => {
 
     // Compliance / Policy list
     // define the method to be intercepted
-    APIServer.persist().get('/policies.open-cluster-management.io/v1/namespaces/mcm/policies')
+    APIServer.persist().get('/policy.open-cluster-management.io/v1/namespaces/mcm/policies')
       .reply(200, mockComplianceListMCMResponse);
-    APIServer.persist().get('/policies.open-cluster-management.io/v1/namespaces/default/policies')
+    APIServer.persist().get('/policy.open-cluster-management.io/v1/namespaces/default/policies')
       .reply(200, mockComplianceListDefaultResponse);
-    APIServer.persist().get('/policies.open-cluster-management.io/v1/namespaces/kube-system/policies')
+    APIServer.persist().get('/policy.open-cluster-management.io/v1/namespaces/kube-system/policies')
       .reply(200, mockComplianceListKubeSystemResponse);
 
     // Single compliance / policy
     APIServer.persist().get('/compliance.mcm.ibm.com/v1alpha1/namespaces/mcm/compliances/compliance-xz')
       .reply(200, mockCreateCompliance);
-    APIServer.persist().get('/policies.open-cluster-management.io/v1/namespaces/mcm/policies/case1-test-policy')
+    APIServer.persist().get('/policy.open-cluster-management.io/v1/namespaces/mcm/policies/case1-test-policy')
       .reply(200, mockSinglePolicyResponse);
-    APIServer.persist().get('/policies.open-cluster-management.io/v1/namespaces/default/policies/compliance-xz')
+    APIServer.persist().get('/policy.open-cluster-management.io/v1/namespaces/default/policies/compliance-xz')
       .reply(200, mockSinglePolicyResponse);
-    APIServer.persist().get('/policies.open-cluster-management.io/v1/namespaces/kube-system/policies/case1-test-policy')
+    APIServer.persist().get('/policy.open-cluster-management.io/v1/namespaces/kube-system/policies/case1-test-policy')
       .reply(200, mockSingleNoPolicyResponse);
 
-    APIServer.get('/policies.open-cluster-management.io/v1/namespaces/default/policies/case1-test-policy')
+    APIServer.get('/policy.open-cluster-management.io/v1/namespaces/default/policies/case1-test-policy')
       .reply(200, mockRootPolicyResponse);
-    APIServer.get('/policies.open-cluster-management.io/v1/namespaces/default/policies')
+    APIServer.get('/policy.open-cluster-management.io/v1/namespaces/default/policies')
       .reply(200, mockRootPoliciesListResponse);
     // Placement bindings
     APIServer.persist().get('/mcm.ibm.com/v1alpha1/namespaces/mcm/placementbindings')
@@ -108,7 +108,7 @@ describe('Compliance Resolver', () => {
       .reply(200, mockKubeSystemStatusResponse);
   });
 
-  test('Correctly Resolves Compliance List Query', (done) => {
+  test('Correctly Resolves Compliance List Query', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -148,9 +148,9 @@ describe('Compliance Resolver', () => {
         expect(JSON.parse(res.text)).toMatchSnapshot();
         done();
       });
-  });
+  }));
 
-  test('Correctly Resolves Compliance List Query with specific namespace', (done) => {
+  test('Correctly Resolves Compliance List Query with specific namespace', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -190,9 +190,9 @@ describe('Compliance Resolver', () => {
         expect(JSON.parse(res.text)).toMatchSnapshot();
         done();
       });
-  });
+  }));
 
-  test('Correctly Resolves Single Compliance Query', (done) => {
+  test('Correctly Resolves Single Compliance Query', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -357,9 +357,9 @@ describe('Compliance Resolver', () => {
         expect(JSON.parse(res.text)).toMatchSnapshot();
         done();
       });
-  });
+  }));
 
-  test('Correctly Resolves Single Compliance Query without namespace', (done) => {
+  test('Correctly Resolves Single Compliance Query without namespace', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -524,5 +524,5 @@ describe('Compliance Resolver', () => {
         expect(JSON.parse(res.text)).toMatchSnapshot();
         done();
       });
-  });
+  }));
 });

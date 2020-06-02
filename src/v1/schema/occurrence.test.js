@@ -6,6 +6,7 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+/* Copyright (c) 2020 Red Hat, Inc. */
 
 import supertest from 'supertest';
 import nock from 'nock';
@@ -25,7 +26,7 @@ describe('Occurrences Resolver', () => {
       .reply(200, mockDiffIdOccurrences);
   });
 
-  test('Correctly Resolves Occurrences Query without userAccountID', (done) => {
+  test('Correctly Resolves Occurrences Query without userAccountID', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -54,9 +55,9 @@ describe('Occurrences Resolver', () => {
         expect(textMessage).toMatchSnapshot();
         done();
       });
-  });
+  }));
 
-  test('Correctly Resolves Occurrences Query with empty userAccountID', (done) => {
+  test('Correctly Resolves Occurrences Query with empty userAccountID', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -85,9 +86,9 @@ describe('Occurrences Resolver', () => {
         expect(textMessage).toMatchSnapshot();
         done();
       });
-  });
+  }));
 
-  test('Correctly Resolves Occurrences Query with specific userAccountID', (done) => {
+  test('Correctly Resolves Occurrences Query with specific userAccountID', () => new Promise((done) => {
     supertest(server)
       .post(GRAPHQL_PATH)
       .send({
@@ -116,5 +117,5 @@ describe('Occurrences Resolver', () => {
         expect(textMessage).toMatchSnapshot();
         done();
       });
-  });
+  }));
 });

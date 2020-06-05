@@ -6,6 +6,7 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+/* Copyright (c) 2020 Red Hat, Inc. */
 
 export const typeDef = `
 type Query {
@@ -16,7 +17,7 @@ type Query {
 
   # Policies and Compliances
   policies(name: String, clusterName: String): [Policy]
-  policiesInCluster(cluster: String): [Policy]
+  policiesInCluster(cluster: String): [PolicyInfo]
   clustersInPolicy(policy: String, hubNamespace: String): [ClusterInfo]
   policiesInApplication(violatedPolicies: JSON): [Policy]
   violationsInPolicy(policy: String, namespace: String): [Violations]

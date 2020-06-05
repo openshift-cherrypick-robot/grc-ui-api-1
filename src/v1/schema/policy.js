@@ -29,16 +29,23 @@ type Policy implements K8sObject {
   cluster: String
 }
 
+type PolicyInfo implements K8sObject {
+  cluster: String
+  apiVersion: String
+  kind: String
+  metadata: Metadata
+  spec: JSON
+  status: JSON
+  policiesStatusDetails: JSON
+}
+
 type ClusterInfo implements K8sObject {
   name: String
-  kind: String
-  apiVersion: String
-  spec: JSON
-  metadata: Metadata
-  status: JSON
   total: String
   violated: String
-  policy: JSON
+  policyListStatuses: JSON
+  metadata: Metadata
+  spec: JSON
 }
 
 type PolicyDetail {

@@ -31,6 +31,10 @@ const statusLastTransTimeStr = 'status.conditions[0].lastTransitionTime';
 const statusValidityValidStr = 'status.Validity.valid';
 const statusValidityStr = 'status.Validity';
 const objMetadataNameStr = 'objectDefinition.metadata.name';
+const statusDetails = 'status.details';
+const templateMetaNameStr = 'templateMeta.name';
+const historyLatestMessageStr = 'history[0].message';
+const historyLatestTimestampStr = 'history[0].lastTimestamp';
 
 function getTemplates(policy = {}, templateType = '') {
   const templates = [];
@@ -581,60 +585,102 @@ export default class ComplianceModel {
     return policyResult;
   }
 
-  // to-do fix the gap between policy call and resourceview for missing field on cluster side panel
   async getAllPoliciesInCluster(cluster) {
     const allPoliciesInClusterResult = [];
     // if cluster name specified
     if (cluster !== undefined) {
       const URL = `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/${cluster}/policies/`;
       const policyListResponse = await this.kubeConnector.get(URL);
-      const policyListItems = _.get(policyListResponse, 'items', '');
+      const policyListItems = _.get(policyListResponse, 'items');
       if (Array.isArray(policyListItems) && policyListItems.length > 0) {
-        policyListItems.forEach((policy) => {
-          const policyNS = _.get(policy, metadataNsStr, 'metadata.labels.cluster-name')
-            .trim().toLowerCase();
-          if (policyNS && policyNS === cluster.trim().toLowerCase()) {
-            allPoliciesInClusterResult.push({ ...policy, raw: policy });
+        policyListItems.forEach((policyListItem) => {
+          const policyNS = _.get(policyListItem, metadataNsStr);
+          if (policyNS && policyNS.trim().toLowerCase() === cluster.trim().toLowerCase()) {
+            const policiesStatusDetails = [];
+            const policyListDetails = _.get(policyListItem, statusDetails);
+            policyListDetails.forEach((detail) => {
+              policiesStatusDetails.push({
+                name: _.get(detail, templateMetaNameStr, '-'),
+                compliant: _.get(detail, 'compliant', '-'),
+                message: _.get(detail, historyLatestMessageStr, '-'),
+                lastTimestamp: _.get(detail, historyLatestTimestampStr, '-'),
+              });
+            });
+            allPoliciesInClusterResult.push({ cluster, ...policyListItem, policiesStatusDetails });
           }
         });
       }
     }
-
     return allPoliciesInClusterResult;
   }
 
-  // to-do fix the gap between policy call and resourceview for missing field on policy side panel
   async getAllClustersInPolicy(policyName, hubNamespace) {
     let allClustersInPolicyResult = [];
     if (policyName && hubNamespace) {
-      const URL = `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/${hubNamespace}/policies/${policyName}`;
-      const policyDetails = await this.kubeConnector.get(URL);
+      // step 1 get the clusters associated with this policy (policyName)
+      const policyDetailsURL =
+        `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/${hubNamespace}/policies/${policyName}`;
+      const policyDetails = await this.kubeConnector.get(policyDetailsURL);
       const clustersList = _.get(policyDetails, statusStatusStr);
       if (Array.isArray(clustersList) && clustersList.length > 0) {
+        // step 2 set cluster violated info for this policy
+        let temp = [];
         clustersList.forEach((cluster) => {
-          if (cluster.compliant === 'compliant') {
-            allClustersInPolicyResult.push({ name: cluster.clustername, status: 'compliant' });
+          if (cluster.compliant.trim().toLowerCase() === 'compliant') {
+            temp.push({ name: cluster.clustername, status: 'compliant' });
           } else {
-            allClustersInPolicyResult.push({ name: cluster.clustername, status: 'violated' });
+            temp.push({ name: cluster.clustername, status: 'violated' });
           }
         });
-        const [clusters, clusterstatuses] = await Promise.all([
-          this.kubeConnector.getResources(ns => `/apis/${ApiGroup.clusterRegistryGroup}/${ApiGroup.mcmVersion}/namespaces/${ns}/clusters`),
-          this.kubeConnector.getResources(ns => `/apis/${ApiGroup.mcmGroup}/${ApiGroup.mcmVersion}/namespaces/${ns}/clusterstatuses`),
-        ]);
-        const clusterMap = new Map();
-        const clusterStatusMap = new Map();
-        clusters.forEach(cluster => clusterMap.set(_.get(cluster, metadataNameStr, ''), cluster));
-        clusterstatuses.forEach((cluster) => {
-          clusterStatusMap.set(_.get(cluster, metadataNameStr, ''), { metadata: _.get(cluster, 'metadata'), spec: { consoleURL: _.get(cluster, 'spec.consoleURL', '') } });
-        });
-        allClustersInPolicyResult = createStatusResult(allClustersInPolicyResult);
-        allClustersInPolicyResult = allClustersInPolicyResult.map((item) => {
-          const { name } = item;
-          const info = clusterMap.get(name);
-          const status = clusterStatusMap.get(name);
+        // step 3 calculate violated clusters number / total clusters number
+        temp = createStatusResult(temp);
+        // step 4 for each cluster from step 1, get the policies list info on that cluster
+        const policyListPromise = temp.map(async (cluster) => {
+          const singlePolicyListURL =
+            `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces/${cluster.name}/policies/`;
+          const singlePolicyList = await this.kubeConnector.get(singlePolicyListURL);
+          const policyListItems = _.get(singlePolicyList, 'items');
+          const policyListStatuses = [];
+          // only keep policies list info for this policy (policyName)
+          if (Array.isArray(policyListItems) && policyListItems.length > 0) {
+            policyListItems.forEach((policyListItem) => {
+              const itemName = _.get(policyListItem, 'metadata.name').trim().toLowerCase();
+              if (itemName === `${hubNamespace.trim().toLowerCase()}.${policyName.trim().toLowerCase()}`
+              || itemName === policyName.trim().toLowerCase()) {
+                const policyListDetails = _.get(policyListItem, statusDetails);
+                policyListDetails.forEach((detail) => {
+                  policyListStatuses.push({
+                    name: _.get(detail, templateMetaNameStr, '-'),
+                    compliant: _.get(detail, 'compliant', '-'),
+                    message: _.get(detail, historyLatestMessageStr, '-'),
+                    lastTimestamp: _.get(detail, historyLatestTimestampStr, '-'),
+                  });
+                });
+              }
+            });
+          }
           return {
-            ...item, ...info, ...status, policy: policyDetails,
+            ...cluster,
+            policyListStatuses,
+          };
+        });
+        allClustersInPolicyResult = await Promise.all(policyListPromise);
+        // step 5 get cluster info like consoleURL, need to update cluster Api after installer2.0
+        const [clusterStatuses] = await Promise.all([
+          this.kubeConnector.getResources(ns =>
+            `/apis/${ApiGroup.mcmGroup}/${ApiGroup.mcmVersion}/namespaces/${ns}/clusterstatuses`),
+        ]);
+        const clusterStatusMap = new Map();
+        clusterStatuses.forEach((cluster) => {
+          clusterStatusMap.set(
+            _.get(cluster, metadataNameStr, ''),
+            { metadata: _.get(cluster, 'metadata'), spec: { consoleURL: _.get(cluster, 'spec.consoleURL', '') } },
+          );
+        });
+        allClustersInPolicyResult = allClustersInPolicyResult.map((clusterInfo) => {
+          const status = clusterStatusMap.get(clusterInfo.name);
+          return {
+            ...clusterInfo, ...status,
           };
         });
       }
@@ -757,14 +803,14 @@ export default class ComplianceModel {
     const violations = [];
     policyResponses.forEach((policyResponse) => {
       const cluster = _.get(policyResponse, 'metadata.labels["policy.open-cluster-management.io/cluster-name"]', '-');
-      let details = _.get(policyResponse, 'status.details', []);
+      let details = _.get(policyResponse, statusDetails, []);
       details = details.filter(detail => _.get(detail, 'compliant', 'unknown') === 'NonCompliant');
       details.forEach((detail) => {
         violations.push({
           cluster,
-          name: _.get(detail, 'templateMeta.name', '-'),
-          message: _.get(detail, 'history[0].message', '-'),
-          timestamp: _.get(detail, 'history[0].lastTimestamp', '-'),
+          name: _.get(detail, templateMetaNameStr, '-'),
+          message: _.get(detail, historyLatestMessageStr, '-'),
+          timestamp: _.get(detail, historyLatestTimestampStr, '-'),
           consoleURL: clusterConsoleURL[cluster],
         });
       });
@@ -892,17 +938,17 @@ export default class ComplianceModel {
 
   static resolvePolicyViolations(parent, displayVioOnly = false) {
     const violationArray = [];
-    let details = _.get(parent, 'status.details', []);
+    let details = _.get(parent, statusDetails, []);
     if (displayVioOnly) {
       details = details.filter(detail => _.get(detail, 'compliant', 'unknown') !== 'Compliant');
     }
     const cluster = _.get(parent, 'cluster', '-');
     details.forEach((detail) => {
       violationArray.push({
-        name: _.get(detail, 'templateMeta.name', '-'),
+        name: _.get(detail, templateMetaNameStr, '-'),
         cluster,
-        message: _.get(detail, 'history[0].message', '-'),
-        timestamp: _.get(detail, 'history[0].lastTimestamp', '-'),
+        message: _.get(detail, historyLatestMessageStr, '-'),
+        timestamp: _.get(detail, historyLatestTimestampStr, '-'),
       });
     });
     return violationArray;

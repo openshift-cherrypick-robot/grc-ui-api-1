@@ -11,6 +11,9 @@
 import ApiGroup from '../lib/ApiGroup';
 import KubeModel from './kube';
 
+const policyAPIPrefix = `/apis/${ApiGroup.policiesGroup}/${ApiGroup.version}/namespaces`;
+const appAPIPrefix = `/apis/${ApiGroup.appsGroup}/${ApiGroup.version}/namespaces`;
+
 const filterByName = (names, items) =>
   items.filter(item => names.find(name => name === item.metadata.name));
 
@@ -19,7 +22,7 @@ export default class PlacementModel extends KubeModel {
     const { matchNames } = selector;
 
     const response = await this.kubeConnector.getResources(
-      ns => `/apis/${ApiGroup.mcmGroup}/${ApiGroup.mcmVersion}/namespaces/${ns}/placementbindings`,
+      ns => `${policyAPIPrefix}/${ns}/placementbindings`,
       { kind: 'PlacementBinding' },
     );
     const placementBindings = matchNames ? filterByName(matchNames, response) : response;
@@ -36,7 +39,7 @@ export default class PlacementModel extends KubeModel {
     const { matchNames } = selector;
 
     const response = await this.kubeConnector.getResources(
-      ns => `/apis/${ApiGroup.appsGroup}/${ApiGroup.version}/namespaces/${ns}/placementrules`,
+      ns => `${appAPIPrefix}/${ns}/placementrules`,
       { kind: 'PlacementRule' },
     );
     const placementPolicies = matchNames ? filterByName(matchNames, response) : response;

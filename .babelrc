@@ -1,14 +1,15 @@
 {
   "presets": [
-    ["env", {
-      "targets": {
-        "node": "current"
-      }
-    }]
+    "@babel/preset-env"
   ],
   "plugins": [
-    "transform-async-to-generator",
-    "transform-object-rest-spread"
+    "@babel/plugin-transform-async-to-generator",
+    "@babel/plugin-proposal-object-rest-spread",
+    ["@babel/plugin-transform-runtime",
+      {
+        "regenerator": true
+      }
+    ]
   ],
   "env": {
     "development": {

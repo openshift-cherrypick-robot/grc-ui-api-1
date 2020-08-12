@@ -460,7 +460,7 @@ export default class ComplianceModel {
     };
   }
 
-  async getPlacementRules(parent = {}) {
+  async getPlacementRulesFromParent(parent = {}) {
     const placements = _.get(parent, 'status.placement', []);
     const response = await this.kubeConnector.getResources(
       (ns) => `${appAPIPrefix}/${ns}/placementrules`,
@@ -490,7 +490,7 @@ export default class ComplianceModel {
     return placementPolicies;
   }
 
-  async getPlacementBindings(parent = {}) {
+  async getPlacementBindingsFromParent(parent = {}) {
     const placements = _.get(parent, 'status.placement', []);
     const response = await this.kubeConnector.getResources(
       (ns) => `${policyAPIPrefix}/${ns}/placementbindings`,
@@ -504,6 +504,59 @@ export default class ComplianceModel {
 
     placements.forEach((placement) => {
       const binding = _.get(placement, 'placementBinding', '');
+      const pb = map.get(binding);
+      if (pb) {
+        placementBindings.push({
+          metadata: pb.metadata,
+          raw: pb,
+          placementRef: pb.placementRef,
+          subjects: pb.subjects,
+        });
+      }
+    });
+    return placementBindings;
+  }
+
+  async getPlacementRules(prs = []) {
+    const response = await this.kubeConnector.getResources(
+      (ns) => `${appAPIPrefix}/${ns}/placementrules`,
+      { kind: 'PlacementRule' },
+    );
+    const map = new Map();
+    if (response) {
+      response.forEach((item) => map.set(item.metadata.name, item));
+    }
+    const placementPolicies = [];
+
+    prs.forEach((rule) => {
+      const pp = map.get(rule);
+      if (pp) {
+        const spec = pp.spec || {};
+        placementPolicies.push({
+          clusterLabels: spec.clusterSelector,
+          metadata: pp.metadata,
+          raw: pp,
+          clusterReplicas: spec.clusterReplicas,
+          resourceSelector: spec.resourceHint,
+          status: pp.status,
+        });
+      }
+    });
+    return placementPolicies;
+  }
+
+  async getPlacementBindings(pbs = []) {
+    const response = await this.kubeConnector.getResources(
+      (ns) => `${policyAPIPrefix}/${ns}/placementbindings`,
+      { kind: 'PlacementBinding' },
+    );
+    const map = new Map();
+    if (response) {
+      response.forEach((item) => map.set(item.metadata.name, item));
+    }
+    const placementBindings = [];
+
+    pbs.forEach((binding) => {
       const pb = map.get(binding);
       if (pb) {
         placementBindings.push({

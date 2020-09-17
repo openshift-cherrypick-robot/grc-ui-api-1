@@ -747,17 +747,13 @@ export default class ComplianceModel {
     return filterViolatedPolicies;
   }
 
-  async getAllViolationsInPolicy(policyName, hubNamespace) {
-    const resultsWithPolicyName = [];
-    if (policyName === null) {
-      return resultsWithPolicyName;
-    }
-    // nsType === 'allClusterNS', get the list of all clusters namespaces
-    const { allClusterNS, clusterConsoleURLTemp } = await getTypedNS(this.kubeConnector, 'allClusterNS');
-    const clusterConsoleURL = clusterConsoleURLTemp;
+  async getPolicyFromClusterNS(allClusterNS, hubNamespace, policyName) {
     const promises = allClusterNS.map(async (ns) => {
       const URL = `${policyAPIPrefix}/${ns}/policies/${hubNamespace}.${policyName}`;
+      // eslint-disable-next-line no-console
+      console.log(URL);
       const policyResponse = await this.kubeConnector.get(URL);
+
       if (policyResponse.code || policyResponse.message) {
         logger.debug(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
         return null;// 404 or not found
@@ -773,6 +769,51 @@ export default class ComplianceModel {
       }
       return true;
     });
+    // eslint-disable-next-line no-console
+    console.log(JSON.stringify(policyResponses));
+    return policyResponses;
+  }
+
+  async getStatusHistory(policyName, hubNamespace, cluster, templateName) {
+    const resultsWithPolicyName = [];
+    if (policyName === null) {
+      return resultsWithPolicyName;
+    }
+    const allClusterNS = [cluster];
+    const policyResponses = await this.getPolicyFromClusterNS(allClusterNS, hubNamespace, policyName);
+    // Policy history are to be generated from all violated policies get above.
+    // Current violation status are to be get from histroy[most-recent]
+    const statuses = [];
+    policyResponses.forEach((policyResponse) => {
+      let details = _.get(policyResponse, statusDetails, []);
+      details = details.filter((detail) => {
+        if (_.get(detail, templateMetaNameStr, 'unknown') === templateName) {
+          return true;
+        }
+        return false;
+      });
+      details.forEach((detail) => {
+        const history = _.get(detail, 'history', []);
+        history.forEach((status) => {
+          statuses.push({
+            message: _.get(status, 'message', '-'),
+            timestamp: _.get(status, 'lastTimestamp', '-'),
+          });
+        });
+      });
+    });
+    return statuses;
+  }
+
+  async getAllViolationsInPolicy(policyName, hubNamespace) {
+    const resultsWithPolicyName = [];
+    if (policyName === null) {
+      return resultsWithPolicyName;
+    }
+    // nsType === 'allClusterNS', get the list of all clusters namespaces
+    const { allClusterNS, clusterConsoleURLTemp } = await getTypedNS(this.kubeConnector, 'allClusterNS');
+    const clusterConsoleURL = clusterConsoleURLTemp;
+    const policyResponses = await this.getPolicyFromClusterNS(allClusterNS, hubNamespace, policyName);
     // Policy history are to be generated from all violated policies get above.
     // Current violation status are to be get from histroy[most-recent]
     const violations = [];

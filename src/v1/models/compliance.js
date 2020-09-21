@@ -750,8 +750,6 @@ export default class ComplianceModel {
   async getPolicyFromClusterNS(allClusterNS, hubNamespace, policyName) {
     const promises = allClusterNS.map(async (ns) => {
       const URL = `${policyAPIPrefix}/${ns}/policies/${hubNamespace}.${policyName}`;
-      // eslint-disable-next-line no-console
-      console.log(URL);
       const policyResponse = await this.kubeConnector.get(URL);
 
       if (policyResponse.code || policyResponse.message) {
@@ -769,8 +767,6 @@ export default class ComplianceModel {
       }
       return true;
     });
-    // eslint-disable-next-line no-console
-    console.log(JSON.stringify(policyResponses));
     return policyResponses;
   }
 
@@ -805,7 +801,7 @@ export default class ComplianceModel {
     return statuses;
   }
 
-  async getAllViolationsInPolicy(policyName, hubNamespace) {
+  async getAllStatusInPolicy(policyName, hubNamespace) {
     const resultsWithPolicyName = [];
     if (policyName === null) {
       return resultsWithPolicyName;
@@ -813,22 +809,41 @@ export default class ComplianceModel {
     // nsType === 'allClusterNS', get the list of all clusters namespaces
     const { allClusterNS, clusterConsoleURLTemp } = await getTypedNS(this.kubeConnector, 'allClusterNS');
     const clusterConsoleURL = clusterConsoleURLTemp;
-    const policyResponses = await this.getPolicyFromClusterNS(allClusterNS, hubNamespace, policyName);
-    // Policy history are to be generated from all violated policies get above.
+    const promises = allClusterNS.map(async (ns) => {
+      const URL = `${policyAPIPrefix}/${ns}/policies/${hubNamespace}.${policyName}`;
+      const policyResponse = await this.kubeConnector.get(URL);
+
+      if (policyResponse.code || policyResponse.message) {
+        logger.debug(`GRC ERROR ${policyResponse.code} - ${policyResponse.message} - URL : ${URL}`);
+        return null;// 404 or not found
+      }
+      return policyResponse;// found policy
+    });
+    // here need to await all async calls completed then combine their results together
+    const policyResponses = await Promise.all(promises);
+    // remove no found policies
+    policyResponses.filter((policyResponse) => {
+      if (policyResponse === null || policyResponse === undefined) {
+        return false;
+      }
+      return true;
+    });
+
+    // Policy history are to be generated from all compliant/non-compliant policies get above.
     // Current violation status are to be get from histroy[most-recent]
-    const violations = [];
+    const status = [];
     policyResponses.forEach((policyResponse) => {
       const cluster = _.get(policyResponse, 'metadata.labels["policy.open-cluster-management.io/cluster-name"]', '-');
-      let details = _.get(policyResponse, statusDetails, []);
-      details = details.filter((detail) => _.get(detail, 'compliant', 'unknown') === 'NonCompliant');
+      const details = _.get(policyResponse, statusDetails, []);
       details.forEach((detail) => {
         const templates = _.get(policyResponse, 'spec.policy-templates', []);
         const template = templates.find((t) => _.get(t, 'objectDefinition.metadata.name', 'a') === _.get(detail, templateMetaNameStr), 'b');
-        violations.push({
+        status.push({
+          templateName: _.get(detail, templateMetaNameStr, '-'),
           cluster,
+          status: _.get(detail, 'compliant', 'no-status'),
           apiVersion: _.get(template, 'objectDefinition.apiVersion', '-'),
           kind: _.get(template, 'objectDefinition.kind', '-'),
-          name: _.get(detail, templateMetaNameStr, '-'),
           message: _.get(detail, historyLatestMessageStr, '-'),
           timestamp: _.get(detail, historyLatestTimestampStr),
           consoleURL: clusterConsoleURL[cluster],
@@ -837,7 +852,7 @@ export default class ComplianceModel {
         });
       });
     });
-    return violations;
+    return status;
   }
 
   static resolvePolicyDetails(parent) {

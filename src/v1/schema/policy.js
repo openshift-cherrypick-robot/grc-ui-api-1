@@ -87,6 +87,19 @@ type Violations {
   policyNamespace: String
 }
 
+type Status {
+  templateName: String
+  cluster: String
+  status: String
+  apiVersion: String
+  kind: String
+  message: String
+  timestamp: String
+  consoleURL: String
+  policyName: String
+  policyNamespace: String
+}
+
 type History {
   message: String
   timestamp: String
@@ -107,9 +120,9 @@ export const resolver = {
     policiesInApplication: (
       root, args, { complianceModel },
     ) => complianceModel.getAllPoliciesInApplication(args.violatedPolicies),
-    violationsInPolicy: (
+    policyStatus: (
       root, args, { complianceModel },
-    ) => complianceModel.getAllViolationsInPolicy(args.policy, args.namespace),
+    ) => complianceModel.getAllStatusInPolicy(args.policyName, args.hubNamespace),
     placementRules: (
       root, args, { complianceModel },
     ) => complianceModel.getPlacementRules(args.prs),

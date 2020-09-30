@@ -8,15 +8,14 @@
  ****************************************************************************** */
 /* Copyright (c) 2020 Red Hat, Inc. */
 
-const requestretry = require('requestretry');
-const log4js = require('log4js');
+import logger from './logger';
 
-const logger = log4js.getLogger('server');
+const requestretry = require('requestretry');
 
 const myRetryStrategy = (err, response) => {
   if (err) {
     logger.error(err);
-    logger.debug(response);
+    logger.error(response);
   }
 
   return !!err || requestretry.RetryStrategies.HTTPError(err, response) || requestretry.RetryStrategies.NetworkError(err, response);

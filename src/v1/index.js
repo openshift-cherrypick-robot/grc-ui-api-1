@@ -11,7 +11,7 @@
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { isInstance as isApolloErrorInstance, formatError as formatApolloError } from 'apollo-errors';
-import morgan from 'morgan';
+import morganBody from 'morgan-body';
 import helmet from 'helmet';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -72,18 +72,12 @@ const apolloServer = new ApolloServer({
 const graphQLServer = express();
 graphQLServer.use(compression());
 
-const requestLogger = isProd
-  ? morgan('combined', {
-    skip: (req, res) => res.statusCode < 400,
-  })
-  : morgan('dev');
-
 // These headers are dealt with in icp-management-ingress
 graphQLServer.use('*', helmet({
   frameguard: false,
   noSniff: false,
   xssFilter: false,
-}), noCache(), requestLogger, cookieParser());
+}), noCache(), cookieParser());
 
 graphQLServer.get('/livenessProbe', (req, res) => {
   res.send(`Testing livenessProbe --> ${new Date().toLocaleString()}`);
@@ -91,6 +85,17 @@ graphQLServer.get('/livenessProbe', (req, res) => {
 
 graphQLServer.get('/readinessProbe', (req, res) => {
   res.send(`Testing readinessProbe --> ${new Date().toLocaleString()}`);
+});
+
+morganBody(graphQLServer, {
+  noColors: true,
+  logRequestBody: config.get('requestLogger') === 'true',
+  logResponseBody: config.get('requestLogger') === 'true',
+  stream: {
+    write: (message) => {
+      logger.info(message);
+    },
+  },
 });
 
 const auth = [];

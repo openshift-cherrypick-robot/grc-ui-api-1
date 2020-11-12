@@ -6,60 +6,36 @@
  * Use, duplication or disclosure restricted by GSA ADP Schedule
  * Contract with IBM Corp.
  ****************************************************************************** */
+/* Copyright (c) 2020 Red Hat, Inc. */
 
 export default function createMockHttp() {
   const state = {
     namespaces: {
       items: [
         { // non cluster namespace
-          crn: 'crn:v1:icp:private:k8:mycluster:n/default:::',
-          serviceName: 'k8',
-          region: 'mycluster',
-          scope: 'namespace',
           metadata: {
             name: 'default',
           },
-          actions: 'CRUD',
         },
         { // non cluster namespace
-          crn: 'crn:v1:icp:private:k8:mycluster:n/kube-system:::',
-          serviceName: 'k8',
-          region: 'mycluster',
-          scope: 'namespace',
           metadata: {
             name: 'kube-system',
           },
-          actions: 'CRUD',
         },
         { // non cluster namespace
-          crn: 'crn:v1:icp:private:k8:mycluster:n/kube-system:::',
-          serviceName: 'k8',
-          region: 'mycluster',
-          scope: 'namespace',
           metadata: {
-            name: 'mcm',
+            name: 'policy-namespace',
           },
-          actions: 'CRUD',
         },
         { // cluster namespace
-          crn: 'crn:v1:icp:private:k8:mycluster:n/kube-system:::',
-          serviceName: 'k8',
-          region: 'mycluster',
-          scope: 'namespace',
           metadata: {
             name: 'cluster1',
           },
-          actions: 'CRUD',
         },
         { // cluster namespace
-          crn: 'crn:v1:icp:private:k8:mycluster:n/kube-system:::',
-          serviceName: 'k8',
-          region: 'mycluster',
-          scope: 'namespace',
           metadata: {
-            name: 'clusterhub',
+            name: 'local-cluster',
           },
-          actions: 'CRUD',
         },
       ],
     },

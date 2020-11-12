@@ -10,25 +10,21 @@
 import _ from 'lodash';
 import { gql } from 'apollo-server-express';
 import * as creation from './creation';
-import * as placements from './placement';
 import * as compliance from './compliance';
 import * as json from './json';
 import * as namespace from './namespace';
 import * as policy from './policy';
 import * as genericResources from './generic-resources';
 import * as query from './query';
-import * as occurrence from './occurrence';
 
 const modules = [
   creation,
-  placements,
   compliance,
   json,
   namespace,
   policy,
   query,
   genericResources,
-  occurrence,
 ];
 
 const mainDefs = [gql`

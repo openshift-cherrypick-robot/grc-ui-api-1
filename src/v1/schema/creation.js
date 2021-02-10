@@ -19,6 +19,7 @@ type Discoveries {
   annotations: Annotations
   templates: [Templates]
   namespaces: JSON
+  policiesByNamespace: JSON
 }
 type Annotations {
   standards: [String]
@@ -55,14 +56,16 @@ export const resolver = {
 
       // existing policies
       const policyNames = [];
+      const policiesByNamespace = {};
       const collection = { standards: [], categories: [], controls: [] };
       const compliances = await complianceModel.getCompliances();
       compliances.forEach(({
-        name, metadata = {},
+        name, namespace, metadata = {},
       }) => {
         if (!_.isEmpty(metadata)) {
           const { annotations } = metadata;
           policyNames.push(name);
+          policiesByNamespace[name] = namespace;
           Object.keys(collection).forEach((key) => {
             const types = _.get(annotations, `${ApiGroup.policiesGroup}/${key}`, '');
             types.split(',').forEach((type) => {
@@ -88,6 +91,7 @@ export const resolver = {
         annotations: collection,
         templates,
         namespaces: allNonClusterNS,
+        policiesByNamespace,
       };
     },
   },

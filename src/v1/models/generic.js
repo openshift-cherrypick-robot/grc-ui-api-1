@@ -31,6 +31,88 @@ function getApiGroupFromSelfLink(selfLink, kind) {
   return apiGroup;
 }
 
+function formatApi(api, resourceRule, trgtAPIGroups, singleNSAccess) {
+  // no matter if user want *, always return these special cases
+  if (Array.isArray(resourceRule.resources) && (trgtAPIGroups.has(api) || api === '*')) {
+    const resources = _.compact(resourceRule.resources);
+    const verbs = _.compact(resourceRule.verbs);
+    if (resourceRule.resources.length > 0) {
+      resources.forEach((resource) => {
+        // use the combined api + resource as the unique key
+        const mapKey = `${api}/${resource}`;
+        if (Object.prototype.hasOwnProperty.call(singleNSAccess.rules, mapKey)) {
+          // eslint-disable-next-line no-param-reassign
+          singleNSAccess.rules[mapKey] = _.union(singleNSAccess.rules[mapKey], verbs);
+        } else {
+          // eslint-disable-next-line no-param-reassign
+          singleNSAccess.rules[mapKey] = verbs;
+        }
+      });
+    }
+  }
+}
+
+function userAccessFormatter(accessInfo, apiGrps, singleNS, rawDataFlag) {
+  const trgtAPIGroups = new Set(apiGrps);
+  const singleNSAccess = {
+    namespace: singleNS,
+    rules: {},
+  };
+  // if user query raw = true, also return original raw access data on each namespace
+  if (rawDataFlag) {
+    singleNSAccess.rawData = accessInfo;
+  }
+  const resourceRules = _.get(accessInfo, 'status.resourceRules', '');
+  if (Array.isArray(resourceRules) && resourceRules.length > 0) {
+    resourceRules.forEach((resourceRule) => {
+      if (Array.isArray(resourceRule.apiGroups)) {
+        const apiGroups = _.compact(resourceRule.apiGroups);
+        if (resourceRule.apiGroups.length > 0) {
+          apiGroups.forEach((api) => {
+            formatApi(api, resourceRule, trgtAPIGroups, singleNSAccess);
+          });
+        }
+      }
+    });
+  }
+  return singleNSAccess;
+}
+
+async function getUserAccess(kubeconnect, singleNS, apiGroups, rawDataFlag, resolve, reject) {
+  const k8sAPI = '/apis/authorization.k8s.io/v1';
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  const options = {
+    json: true,
+    body: {
+      apiVersion: 'authorization.k8s.io/v1',
+      kind: 'SelfSubjectRulesReview',
+      spec: {
+        namespace: singleNS,
+      },
+    },
+  };
+  const response = await kubeconnect.doRequest(kubeconnect.getDefaults('POST', `${k8sAPI}/selfsubjectrulesreviews`, headers), options).catch((err) => reject(err));
+  const userAccess = userAccessFormatter(response, apiGroups, singleNS, rawDataFlag);
+  return resolve(userAccess);
+}
+
+async function getUserAccessInfo(kubeconnect, trgtAPIGroups, rawDataFlag, namespaces) {
+  const userAccessReq = [];
+  namespaces.forEach((singleNS) => { // each element binds with one NS then parallelly call whole array
+    userAccessReq.push(
+      new Promise((resolve, reject) => getUserAccess(kubeconnect, singleNS, trgtAPIGroups, rawDataFlag, resolve, reject)),
+    );
+  });
+  const userAccessResult = await Promise.all(userAccessReq);
+  if (userAccessResult) {
+    return userAccessResult;
+  }
+  return null;
+}
+
 export default class GenericModel extends KubeModel {
   // Generic query to get local and remote resource data
   // Remote resources are queried using ManagedClusterView
@@ -253,5 +335,15 @@ export default class GenericModel extends KubeModel {
       throw new Error(`${response.code} - ${response.message}`);
     }
     return response;
+  }
+
+  async getUserAccessCredentials() {
+    const targetAPIGroups = [
+      'policy.open-cluster-management.io',
+      'apps.open-cluster-management.io',
+    ];
+
+    const { namespaces } = this.kubeConnector;
+    return getUserAccessInfo(this.kubeConnector, targetAPIGroups, null, namespaces);
   }
 }

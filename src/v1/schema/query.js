@@ -32,7 +32,11 @@ type Query {
   getUserAccessCredentials: JSON
 
   # Get Ansible Tower Job Templates
-  ansibleJobTemplates(towerURL: String!, token: String!): [AnsibleJobTemplate]
+  ansibleJobTemplates(host: String!, token: String!): [AnsibleJobTemplate]
+  # Get Ansible Credentials
+  ansibleCredentials: [AnsibleCredential]
+  # Copy and return secret name for given Ansible credential
+  copyAnsibleSecret(name: String!, namespace: String!, targetNamespace: String!): AnsibleSecretName
 }
 
 type Mutation {
@@ -80,13 +84,6 @@ type Metadata {
   selfLink: String
   status: String
   uid: String
-}
-
-# define ansible job template
-type AnsibleJobTemplate {
-  name: String
-  description: String
-  extra_vars: String
 }
 `;
 

@@ -5,6 +5,12 @@ import { gql } from 'apollo-server-express';
 
 export const typeDef = gql`
 # define ansible job template
+type AnsibleAutomation {
+  kind: String
+  apiVersion: String
+  metadata: Metadata
+  spec: JSON
+}
 type AnsibleJobTemplate {
   name: String
   description: String
@@ -16,7 +22,6 @@ type AnsibleCredential {
   host: String
   token: String
 }
-
 type AnsibleSecretName {
   name: String
 }
@@ -33,6 +38,7 @@ type AnsibleAutomationHistory {
 
 export const resolver = {
   Query: {
+    ansibleAutomations: (parent, args, { ansibleModel }) => ansibleModel.getAnsibleAutomations(args),
     ansibleJobTemplates: (parent, args, { ansibleModel }) => ansibleModel.getAnsibleJobTemplates(args),
     ansibleCredentials: (parent, args, { ansibleModel }) => ansibleModel.getAnsibleCredentials(args),
     copyAnsibleSecret: (parent, args, { ansibleModel }) => ansibleModel.copyAnsibleSecret(args),

@@ -4,8 +4,21 @@
 import _ from 'lodash';
 import KubeModel from './kube';
 import logger from '../lib/logger';
+import ApiGroup from '../lib/ApiGroup';
 
 export default class AnsibleModel extends KubeModel {
+  async getAnsibleAutomations(namespace) {
+    let ansibleAutomation;
+    if (namespace) {
+      ansibleAutomation = await this.kubeConnector.getResources((ns) => `/apis/${ApiGroup.policiesGroup}/v1beta1/namespaces/${ns}/policyautomations`);
+    } else {
+      [ansibleAutomation] = await Promise.all([
+        this.kubeConnector.getResources((ns) => `/apis/${ApiGroup.policiesGroup}/v1beta1/namespaces/${ns}/policyautomations`),
+      ]);
+    }
+    return ansibleAutomation || [];
+  }
+
   async getAnsibleJobTemplates(args) {
     const options = {
       url: `${args.host}/api/v2/job_templates`,

@@ -13,6 +13,8 @@ import {
   mockCopiedSecetResponse,
   mockAnsibleAutomationsResponse,
   mockAnsibleJobListResponse,
+  mockCreatePolicyAutomationResponse,
+  mockUpdatePolicyAutomationResponse,
 } from '../mocks/Ansible';
 import ApiGroup from '../lib/ApiGroup';
 
@@ -204,3 +206,91 @@ describe('Ansible Automation Resolver', () => {
       });
   }));
 });
+
+test('Correctly Resolves Create Ansible Automation Mutation', () => new Promise((done) => {
+  const APIServer = nock('http://0.0.0.0/kubernetes');
+  ['default'].forEach((namespace) => {
+    APIServer.persist().post(`/apis/${ApiGroup.policiesGroup}/v1beta1/namespaces/${namespace}/policyautomations`)
+      .reply(200, mockCreatePolicyAutomationResponse);
+  });
+  supertest(server)
+    .post(GRAPHQL_PATH)
+    .send({
+      query: `
+      mutation {
+        createAndUpdatePolicyAutomation(
+          toCreateJSON: [{
+            kind: "PolicyAutomation",
+            apiVersion: "policy.open-cluster-management.io/v1alpha1",
+            metadata: {
+              name: "policy-grc-default-AnsibleJob",
+              namespace: "default",
+            },
+            spec: {
+              policyRef: "policy-grc-111",
+              eventHook: "non-compliance",
+              mode: "once",
+              automationDef: {
+                type: "AnsibleJob",
+                name: "Demo Job Template",
+                secret: "grc-testing",
+                extra_vars: {
+                  selector: "target-cluster",
+                },
+              },
+            },
+          }],
+          toUpdateJSON: null
+        )
+      }
+    `,
+    })
+    .end((err, res) => {
+      expect(JSON.parse(res.text)).toMatchSnapshot();
+      done();
+    });
+}));
+
+test('Correctly Resolves Update Ansible Automation Mutation', () => new Promise((done) => {
+  const APIServer = nock('http://0.0.0.0/kubernetes');
+  ['default'].forEach((namespace) => {
+    APIServer.persist().put(`/apis/${ApiGroup.policiesGroup}/v1beta1/namespaces/${namespace}/policyautomations`)
+      .reply(200, mockUpdatePolicyAutomationResponse);
+  });
+  supertest(server)
+    .post(GRAPHQL_PATH)
+    .send({
+      query: `
+      mutation {
+        createAndUpdatePolicyAutomation(
+          toCreateJSON: null,
+          toUpdateJSON: [{
+            kind: "PolicyAutomation",
+            apiVersion: "policy.open-cluster-management.io/v1alpha1",
+            metadata: {
+              name: "policy-grc-default-AnsibleJob",
+              namespace: "default",
+            },
+            spec: {
+              policyRef: "policy-grc-111",
+              eventHook: "non-compliance",
+              mode: "manually",
+              automationDef: {
+                type: "AnsibleJob",
+                name: "New job Template",
+                secret: "grc-testing",
+                extra_vars: {
+                  selector: "new-cluster",
+                },
+              },
+            },
+          }],
+        )
+      }
+    `,
+    })
+    .end((err, res) => {
+      expect(JSON.parse(res.text)).toMatchSnapshot();
+      done();
+    });
+}));

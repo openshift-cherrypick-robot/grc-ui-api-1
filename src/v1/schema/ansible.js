@@ -44,4 +44,7 @@ export const resolver = {
     copyAnsibleSecret: (parent, args, { ansibleModel }) => ansibleModel.copyAnsibleSecret(args),
     ansibleAutomationHistories: (parent, args, { ansibleModel }) => ansibleModel.ansibleAutomationHistories(args),
   },
+  Mutation: {
+    createAndUpdatePolicyAutomation: (parent, args, { ansibleModel }) => ansibleModel.createAndUpdatePolicyAutomation(args),
+  },
 };

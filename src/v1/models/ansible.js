@@ -121,4 +121,57 @@ export default class AnsibleModel extends KubeModel {
       job: _.get(au, 'status.k8sJob.namespacedName'),
     }));
   }
+
+  async createAndUpdatePolicyAutomation(args) {
+    const { toCreateJSON, toUpdateJSON } = args;
+    let resPromise;
+    const resArray = [];
+    const errArray = [];
+    if (toCreateJSON) {
+      resPromise = await Promise.all(toCreateJSON.map((json) => this.policyAutomationAction(json, 'post')
+        .then((res) => ({ response: res, kind: json.kind }))
+        .catch((err) => ({ status: 'Failure', message: err.message, kind: json.kind }))));
+    } else if (toUpdateJSON) {
+      resPromise = await Promise.all(toUpdateJSON.map((json) => this.policyAutomationAction(json, 'put')
+        .then((res) => ({ response: res, kind: json.kind }))
+        .catch((err) => ({ status: 'Failure', message: err.message, kind: json.kind }))));
+    }
+    resPromise.forEach((item) => {
+      if (item.status === 'Failure' || item.message) {
+        errArray.push({
+          message: item.message ? item.message : item,
+          kind: item.kind,
+        });
+      } else {
+        resArray.push({
+          response: item.response ? item.response : item,
+          kind: item.kind,
+        });
+      }
+    });
+    return {
+      errors: errArray,
+      result: resArray,
+    };
+  }
+
+  async policyAutomationAction(json, action) {
+    const namespace = _.get(json, 'metadata.namespace');
+    const url = `/apis/${ApiGroup.policiesGroup}/v1beta1/namespaces/${namespace}/policyautomations`;
+    let response;
+    switch (action) {
+      case 'post':
+        response = await this.kubeConnector.post(url, json);
+        break;
+      case 'put':
+        response = await this.kubeConnector.put(url, json);
+        break;
+      default:
+        // do nothing
+    }
+    if (response && (response.code || response.message)) {
+      throw new Error(`${response.code} - ${response.message}`);
+    }
+    return response;
+  }
 }

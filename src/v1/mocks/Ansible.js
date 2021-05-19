@@ -10,12 +10,11 @@ export const mockAnsibleSecretsResponse = (ns) => ({
     resourceVersion: '157909',
     creationTimestamp: '2021-04-30T14:41:02Z',
     labels: {
-      'cluster.open-cluster-management.io/cloudconnection': '',
-      'cluster.open-cluster-management.io/provider': 'ans',
+      'cluster.open-cluster-management.io/credentials': '',
+      'cluster.open-cluster-management.io/type': 'ans',
     },
   },
   data: {
-    'credential-hash': 'QI9XaZW68D77JSvtKGlucILe71JH+SPK3JWNyu3cE3g=',
     host: 'aHR0cHM6Ly9hbnNpYmxlLXRvd2VyLXdlYi1zdmMtdG93ZXIuYXBwcy5wb2xpY3ktZ3JjLWNwLWRldi16NGJnMi5kZXYwOC5yZWQtY2hlc3RlcmZpZWxkLmNvbQ==',
     token: 'cjRqWnl5eWh1M2pYMzNuUFNrY25oQ2VKQ1ZNQlNN',
   },
@@ -222,7 +221,6 @@ export const mockSecretExistsInTargetNamespaceResponse = {
         },
       },
       data: {
-        'credential-hash': 'QI9XaZW68D77JSvtKGlucILe71JH+SPK3JWNyu3cE3g=',
         host: 'aHR0cHM6Ly9hbnNpYmxlLXRvd2VyLXdlYi1zdmMtdG93ZXIuYXBwcy5wb2xpY3ktZ3JjLWNwLWRldi16NGJnMi5kZXYwOC5yZWQtY2hlc3RlcmZpZWxkLmNvbQ==',
         token: 'cjRqWnl5eWh1M2pYMzNuUFNrY25oQ2VKQ1ZNQlNN',
       },
@@ -246,12 +244,11 @@ export const mockRootAnsibleSecetResponse = {
     resourceVersion: '352981',
     creationTimestamp: '2021-04-30T17:57:44Z',
     labels: {
-      'cluster.open-cluster-management.io/cloudconnection': '',
-      'cluster.open-cluster-management.io/provider': 'ans',
+      'cluster.open-cluster-management.io/credentials': '',
+      'cluster.open-cluster-management.io/type': 'ans',
     },
   },
   data: {
-    'credential-hash': 'QI9XaZW68D77JSvtKGlucILe71JH+SPK3JWNyu3cE3g=',
     host: 'aHR0cHM6Ly9hbnNpYmxlLXRvd2VyLXdlYi1zdmMtdG93ZXIuYXBwcy5wb2xpY3ktZ3JjLWNwLWRldi16NGJnMi5kZXYwOC5yZWQtY2hlc3RlcmZpZWxkLmNvbQ==',
     token: 'cjRqWnl5eWh1M2pYMzNuUFNrY25oQ2VKQ1ZNQlNN',
   },
@@ -269,12 +266,11 @@ export const mockCopiedSecetResponse = {
     resourceVersion: '352981',
     creationTimestamp: '2021-04-30T17:57:44Z',
     labels: {
-      'cluster.open-cluster-management.io/cloudconnection': '',
-      'cluster.open-cluster-management.io/provider': 'ans',
+      'cluster.open-cluster-management.io/credentials': '',
+      'cluster.open-cluster-management.io/type': 'ans',
     },
   },
   data: {
-    'credential-hash': 'QI9XaZW68D77JSvtKGlucILe71JH+SPK3JWNyu3cE3g=',
     host: 'aHR0cHM6Ly9hbnNpYmxlLXRvd2VyLXdlYi1zdmMtdG93ZXIuYXBwcy5wb2xpY3ktZ3JjLWNwLWRldi16NGJnMi5kZXYwOC5yZWQtY2hlc3RlcmZpZWxkLmNvbQ==',
     token: 'cjRqWnl5eWh1M2pYMzNuUFNrY25oQ2VKQ1ZNQlNN',
   },

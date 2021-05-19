@@ -46,7 +46,7 @@ export default class AnsibleModel extends KubeModel {
 
   async getAnsibleCredentials() {
     const [ansibleCredentials] = await Promise.all([
-      this.kubeConnector.getResources((ns) => `/api/v1/namespaces/${ns}/secrets?labelSelector=cluster.open-cluster-management.io/provider=ans`),
+      this.kubeConnector.getResources((ns) => `/api/v1/namespaces/${ns}/secrets?labelSelector=cluster.open-cluster-management.io/type=ans`),
     ]);
     return ansibleCredentials.map((ans) => ({
       name: ans.metadata.name,
@@ -78,7 +78,6 @@ export default class AnsibleModel extends KubeModel {
           rootSecret.metadata.namespace = targetNamespace;
           rootSecret.metadata.name = `${namespace}.${name}`;
           delete rootSecret.metadata.resourceVersion;
-          delete rootSecret.data['credential-hash'];
           const result = await this.kubeConnector.post(`/api/v1/namespaces/${targetNamespace}/secrets`, rootSecret);
           if (!result.metadata.name) {
             logger.error(result);

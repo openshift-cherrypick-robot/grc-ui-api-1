@@ -290,6 +290,38 @@ Object {
 }
 `;
 
+exports[`Correctly Resolves Delete Policy Automation Mutation 1`] = `
+Object {
+  "data": Object {
+    "modifyPolicyAutomation": Object {
+      "errors": Array [],
+      "result": Array [
+        Object {
+          "kind": "PolicyAutomation",
+          "response": Array [
+            Object {
+              "kind": "PolicyAutomation",
+              "response": Object {
+                "apiVersion": "v1",
+                "details": Object {
+                  "group": "policy.open-cluster-management.io",
+                  "kind": "policyautomations",
+                  "name": "policy-etcdencryption-policy-automation",
+                  "uid": "9841034a-bcb9-4c5b-96a4-827daaf8101a",
+                },
+                "kind": "Status",
+                "metadata": Object {},
+                "status": "Success",
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+}
+`;
+
 exports[`Correctly Resolves Update Policy Automation Mutation 1`] = `
 Object {
   "data": Object {

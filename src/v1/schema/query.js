@@ -36,13 +36,13 @@ type Query {
   # Get Ansible Tower Job Templates
   ansibleJobTemplates(host: String!, token: String!): [AnsibleJobTemplate]
   # Get Ansible Credentials
-  ansibleCredentials: [AnsibleCredential]
+  ansibleCredentials(name: String, namespace: String): [AnsibleCredential]
   # Copy and return secret name for given Ansible credential
   copyAnsibleSecret(name: String!, namespace: String!, targetNamespace: String!): AnsibleSecretName
   # Ansible Automation History
   ansibleAutomationHistories(name: String!, namespace: String!): [AnsibleAutomationHistory]
   # Ansible Operator Installed
-  ansibleOperatorInstalled: AnsibleOperatorInstalled
+  ansibleOperatorInstalled(namespace: String!): AnsibleOperatorInstalled
 }
 
 type Mutation {

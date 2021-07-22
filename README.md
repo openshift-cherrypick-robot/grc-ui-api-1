@@ -39,6 +39,4 @@ The UI API microservice, `grc-ui-api`, is the API server for the governance and 
     npm run start:production
     ```
 
-<!---
-Date: 07/21/2021
--->
+Date: 07/22/2021
